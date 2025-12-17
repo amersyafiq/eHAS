@@ -1,0 +1,27 @@
+.landing-page {
+    background-color: #CAD5E2;
+}
+
+.landing-logo {
+    height: 5rem;
+}
+
+.non-selectable-img {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Safari */
+    -khtml-user-select: none;    /* Konqueror HTML */
+    -moz-user-select: none;      /* Old versions of Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+    -webkit-user-drag: none;     /* Safari/Chrome, to prevent dragging */
+    draggable: false;            /* HTML5 attribute, to prevent dragging */
+    pointer-events: none;        /* Prevents all pointer interactions (clicks, hover, selection) */
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+.services-card > div {
+    background-color: #d8ddfa;
+}
