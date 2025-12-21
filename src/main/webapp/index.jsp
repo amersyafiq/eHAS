@@ -7,10 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html lang="en" dir="ltr" data-bs-theme="light" data-bs-theme-color="theme-color-default">
-    <body class="uikit " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
-
-        <%@ include file="./partials/head.jsp" %>
-        
+    <%@ include file="views/partials/head.jsp" %>
+    <body class="uikit " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">        
         <!-- loader Start -->
         <div id="loading">
             <div class="loader simple-loader">
@@ -37,7 +35,10 @@
                             <a class="text-reset" href="">Contact Us</a>
                         </nav>
 
-                        <button class="btn btn-md btn-primary rounded-pill d-flex gap-2 px-5 align-items-center">
+                        <button 
+                            onclick="location.href='./login'"
+                            class="btn btn-md btn-primary rounded-pill d-flex gap-2 px-5 align-items-center"
+                        >
                             Login
                             <svg width="13" height="12" viewBox="0 0 13 12" fill="none">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -250,49 +251,9 @@
             </div>
             <!-- Book Appointment END -->
 
+            <%@ include file="views/partials/scripts.jsp" %>
         </main>
 
-
-        <!-- Library Bundle Script -->
-        <script src="./vendor/assets/js/core/libs.min.js"></script>
-
-        <!-- External Library Bundle Script -->
-        <script src="./vendor/assets/js/core/external.min.js"></script>
-
-        <!-- Widgetchart Script -->
-        <script src="./vendor/assets/js/charts/widgetcharts.js"></script>
-
-        <!-- mapchart Script -->
-        <script src="./vendor/assets/js/charts/vectore-chart.js"></script>
-        <script src="./vendor/assets/js/charts/dashboard.js"></script>
-
-        <!-- fslightbox Script -->
-        <script src="./vendor/assets/js/plugins/fslightbox.js"></script>
-
-        <!-- Settings Script -->
-        <script src="./vendor/assets/js/plugins/setting.js"></script>
-
-        <!-- Slider-tab Script -->
-        <script src="./vendor/assets/js/plugins/slider-tabs.js"></script>
-
-        <!-- Form Wizard Script -->
-        <script src="./vendor/assets/js/plugins/form-wizard.js"></script>
-
-        <!-- AOS Animation Plugin-->
-
-        <!-- App Script -->
-        <script src="./vendor/assets/js/hope-ui.js" defer></script>
-
-        <!-- Flatpickr Script -->
-        <script src="./vendor/assets/vendor/flatpickr/dist/flatpickr.min.js"></script>
-        <script src="./vendor/assets/js/plugins/flatpickr.js" defer></script>
-
-        <!-- SwiperSlider Script -->
-        <script src="./vendor/assets/vendor/swiperSlider/swiper-bundle.min.js"></script>
-        <script src="./vendor/landing-pages/assets/js/custom.js" defer></script>
-
-
-        <script src="./vendor/assets/js/plugins/prism.mini.js"></script>
     </body>
 
 </html>

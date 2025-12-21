@@ -2,9 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller;
+package com.ehas.controllers;
 
+import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,39 +17,21 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author ASUS
  */
-@WebServlet(name = "RoutingServlet", 
-        urlPatterns = {"/", "/index", "/login", "/dashboard"})
-public class RoutingServlet extends HttpServlet {
+@WebServlet("/login")
+public class loginServlet extends HttpServlet {
 
-    private final String[][] routes = {
-        {"/", "/views/index.jsp"},
-        {"/index", "/views/index.jsp"},
-        {"/login", "/views/login.jsp"},
-        {"/dashboard", "/views/dashboard.jsp"}
-        // add more routes here
-    };
-    
-    
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        String path = request.getRequestURI().substring(request.getContextPath().length());
-        
-        boolean found = false;
-        for (String[] route : routes) {
-            if (route[0].equals(path)) {
-                request.getRequestDispatcher(route[1]).forward(request, response);
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            request.getRequestDispatcher("/views/404.jsp").forward(request, response);
-        }
-        
-        
+        forward(request, response, "/views/login.jsp");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -89,4 +73,12 @@ public class RoutingServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    
+    private void forward(HttpServletRequest request, HttpServletResponse response, String path)
+            throws ServletException, IOException {
+        
+        // Use RequestDispatcher to forward request internally (URL doesn't change)
+    	RequestDispatcher view = request.getRequestDispatcher(path);
+        view.forward(request, response);
+    }
 }
