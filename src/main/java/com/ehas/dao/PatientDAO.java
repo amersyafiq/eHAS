@@ -2,11 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package com.ehas.controllers;
+package com.ehas.dao;
 
-import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,8 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author ASUS
  */
-@WebServlet("/login")
-public class loginServlet extends HttpServlet {
+@WebServlet(name = "PatientDAO", urlPatterns = {"/PatientDAO"})
+public class PatientDAO extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,7 +29,7 @@ public class loginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        forward(request, response, "/views/login.jsp");
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -73,12 +71,4 @@ public class loginServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
-    private void forward(HttpServletRequest request, HttpServletResponse response, String path)
-            throws ServletException, IOException {
-        
-        // Use RequestDispatcher to forward request internally (URL doesn't change)
-    	RequestDispatcher view = request.getRequestDispatcher(path);
-        view.forward(request, response);
-    }
 }
