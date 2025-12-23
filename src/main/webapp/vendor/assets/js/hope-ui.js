@@ -461,8 +461,8 @@ window.addEventListener('load', function () {
   Array.from(date_flatpickr, (elem) => {
     if (typeof flatpickr !== typeof undefined) {
       flatpickr(elem, {
-        minDate: "today",
         dateFormat: "Y-m-d",
+        "maxDate": "today",
       })
     }
   })

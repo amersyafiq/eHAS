@@ -7,14 +7,15 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <%@ include file="./partials/head.jsp" %>
+    <%@ include file="partials/head.jsp" %>
     <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         <!-- loader Start -->
         <div id="loading">
             <div class="loader simple-loader">
                 <div class="loader-body">
                 </div>
-            </div>    </div>
+            </div>    
+        </div>
         <!-- loader END -->
         
         <div class="wrapper">
@@ -122,36 +123,7 @@
                 </div>
             </section>
         </div>
-        <!-- Library Bundle Script -->
-        <script src="./vendor/assets/js/core/libs.min.js"></script>
 
-        <!-- External Library Bundle Script -->
-        <script src="./vendor/assets/js/core/external.min.js"></script>
-
-        <!-- Widgetchart Script -->
-        <script src="./vendor/assets/js/charts/widgetcharts.js"></script>
-
-        <!-- mapchart Script -->
-        <script src="./vendor/assets/js/charts/vectore-chart.js"></script>
-        <script src="./vendor/assets/js/charts/dashboard.js" ></script>
-
-        <!-- fslightbox Script -->
-        <script src="./vendor/assets/js/plugins/fslightbox.js"></script>
-
-        <!-- Settings Script -->
-        <script src="./vendor/assets/js/plugins/setting.js"></script>
-
-        <!-- Slider-tab Script -->
-        <script src="./vendor/assets/js/plugins/slider-tabs.js"></script>
-
-        <!-- Form Wizard Script -->
-        <script src="./vendor/assets/js/plugins/form-wizard.js"></script>
-
-        <!-- AOS Animation Plugin-->
-
-        <!-- App Script -->
-        <script src="./vendor/assets/js/hope-ui.js" defer></script>
-
-
+        <%@ include file="partials/scripts.jsp" %>
     </body>
 </html>

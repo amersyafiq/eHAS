@@ -30,7 +30,10 @@ public class loginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        forward(request, response, "/views/login.jsp");
+        
+        RequestDispatcher view = request.getRequestDispatcher("/views/login.jsp");
+        view.forward(request, response);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -72,12 +75,4 @@ public class loginServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
-    private void forward(HttpServletRequest request, HttpServletResponse response, String path)
-            throws ServletException, IOException {
-        
-        // Use RequestDispatcher to forward request internally (URL doesn't change)
-    	RequestDispatcher view = request.getRequestDispatcher(path);
-        view.forward(request, response);
-    }
 }
