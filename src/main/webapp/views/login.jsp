@@ -31,6 +31,15 @@
                                         </a>
                                         <h2 class="mb-2 text-center">Log In</h2>
                                         <p class="text-center">Login to stay connected.</p>
+
+                                        <% String error = (String) request.getAttribute("error"); %>
+                                        <% if (error != null && !error.isEmpty()) { %>
+                                            <div class="alert alert-danger mb-5">
+                                                <ul class="mb-0">
+                                                    <%= error %>
+                                                </ul>
+                                            </div>
+                                        <% } %>
                                         
                                         <%-- Login Form Start --%>
                                         <form action="${pageContext.request.contextPath}/login" method="POST"  class="row g-3 needs-validation" novalidate>

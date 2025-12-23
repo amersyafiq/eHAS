@@ -37,19 +37,10 @@
                                         
                                         <%-- Register Form Start --%>
                                         <div class="card-body">
-                                            <%
-                                                List<String> errors = (List<String>) request.getAttribute("errors");
-                                                String fullNameVal = request.getAttribute("fullName") != null ? request.getAttribute("fullName").toString() : "";
-                                                String dateOfBirthVal = request.getAttribute("dateOfBirth") != null ? request.getAttribute("dateOfBirth").toString() : "";
-                                                String emailVal = request.getAttribute("email") != null ? request.getAttribute("email").toString() : "";
-                                                String icVal = request.getAttribute("ic_passport") != null ? request.getAttribute("ic_passport").toString() : "";
-                                                String phoneVal = request.getAttribute("phoneNo") != null ? request.getAttribute("phoneNo").toString() : "";
-                                                String picturePath = request.getAttribute("picturePath") != null ? request.getAttribute("picturePath").toString() : "";
-                                            %>
-
+                                            <% List<String> errors = (List<String>) request.getAttribute("errors"); %>
                                             <% if (errors != null && !errors.isEmpty()) { %>
                                                 <div class="alert alert-danger">
-                                                    <strong>There were errors with your submission:</strong>
+                                                    <strong>There were errors with your registration:</strong>
                                                     <ul class="mb-0">
                                                     <% for (String err : errors) { %>
                                                         <li><%= err %></li>
@@ -113,11 +104,6 @@
                                                 <div class="col-md-12">
                                                     <label for="profilePicture" class="form-label">Profile Picture</label>
                                                     <input type="file" name="profilePicture" class="form-control" id="profilePicture" required accept="image/*">
-                                                    <% if (picturePath != null && !picturePath.isEmpty()) { %>
-                                                        <div class="mt-2">
-                                                            <img src="<%= picturePath %>" alt="Profile" style="max-height:120px;" />
-                                                        </div>
-                                                    <% } %>
                                                     <div class="invalid-feedback">
                                                         Choose an image. (maximum size: 5MB)
                                                     </div>

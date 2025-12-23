@@ -67,7 +67,6 @@ public class loginServlet extends HttpServlet {
             if (account != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("loggedUser", account);
-                session.setAttribute("role", account.getAccountType());
                 session.setMaxInactiveInterval(30 * 60);
 
                 response.sendRedirect(request.getContextPath() + "/");

@@ -1,8 +1,13 @@
 <%-- 
-    Document   : index
-    Created on : Dec 23, 2025, 5:42:57 PM
+    Document   : example
+    Created on : Dec 24, 2025, 12:10:06 AM
     Author     : ASUS
 --%>
+
+<%-- 
+    Do not edit this page.
+    This document is to be used as a template for all pages.
+ --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -31,26 +36,9 @@
             
                 <%-- Main Section Start --%>
                 <div class="conatiner-fluid content-inner p-3">
-                    <div class="row m-2">
-                        <div class="col-12 card bg-primary py-4 px-5 mb-4" style="background: linear-gradient(90deg, #0048B2 0%, #3B8AFF 100%);">
-                            <h4 class="text-white fw-bold">Welcome back, <%= account.getFullName() %></h4>
-                            <p class="text-white fs-5 m-0 fw-lighter">You are a <%= account.getAccountType() %></p>
-                        </div>
-                        <div class="col-6 card bg-white py-4 px-5">
-                            <h4 class="text-white fw-bold">Welcome back, <%= account.getFullName() %></h4>
-                            <p class="text-white fs-5 m-0 fw-lighter">You are a <%= account.getAccountType() %></p>
-                        </div>
-                        <div class="col-6 card bg-white py-4 px-5">
-                            <h4 class="text-white fw-bold">Welcome back, <%= account.getFullName() %></h4>
-                            <p class="text-white fs-5 m-0 fw-lighter">You are a <%= account.getAccountType() %></p>
-                        </div>
+                    <%-- TODO: Use Case Here --%>
+
                     
-                    
-                    </div>
-
-
-
-
                 </div>
                 <%-- Main Section END --%>
 
@@ -76,4 +64,3 @@
         <%@ include file="../partials/scripts.jsp" %>
     </body>
 </html>
-

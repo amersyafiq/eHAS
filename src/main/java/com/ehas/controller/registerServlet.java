@@ -180,7 +180,7 @@ public class registerServlet extends HttpServlet {
             patientDAO.createPatient(patient, conn); 
             
             conn.commit();
-            response.sendRedirect(request.getContextPath() + "/views/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
 
         } catch (Exception e) {
@@ -201,15 +201,4 @@ public class registerServlet extends HttpServlet {
         request.setAttribute("errors", errors);
         request.getRequestDispatcher("/views/register.jsp").forward(request, response);
     }
-
-    private String getFileName(Part part) {
-        String contentDisp = part.getHeader("content-disposition");
-        for (String token : contentDisp.split(";")) {
-            if (token.trim().startsWith("filename")) {
-                return token.substring(token.indexOf("=") + 2, token.length() - 1);
-            }
-        }
-        return "";
-    }
-
 }
