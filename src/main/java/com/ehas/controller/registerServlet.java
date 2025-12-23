@@ -25,11 +25,22 @@ import java.util.List;
 import java.util.UUID;
 import java.sql.Connection;
 
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.S3Client;
+import jakarta.servlet.http.Part;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import com.ehas.dao.AccountDAO; 
 import com.ehas.dao.PatientDAO;
 import com.ehas.util.DBConnection; 
 import com.ehas.model.Account;
 import com.ehas.model.Patient;
+import com.ehas.util.S3Connection;
 
 /**
  *
@@ -83,30 +94,50 @@ public class registerServlet extends HttpServlet {
             String ic_passport = request.getParameter("ic_passport"); 
             String phoneNo = request.getParameter("phoneNo"); 
             String email = request.getParameter("email"); 
-            String gender = request.getParameter("gender"); 
+            String gender = "Male";
             String dateOfBirth = request.getParameter("dateOfBirth");
 
-            String picturePath = "uploads/default.png"; // fallback
+            String picturePath = "uploads/default.png";  // fallback in your webapp (e.g., default profile pic)
+
             Part part = request.getPart("profilePicture");
+
             if (part != null && part.getSize() > 0) {
-
                 String submittedFileName = part.getSubmittedFileName();
-                String extension = submittedFileName.substring(submittedFileName.lastIndexOf('.'));
+                String contentType = part.getContentType();  // Important for correct display
+                long fileSize = part.getSize();
 
-                String fileName = "pfp_" + System.currentTimeMillis() + extension;
-
-                String uploadsDir = getServletContext().getRealPath("/uploads");
-                File uploadFolder = new File(uploadsDir);
-
-                 if (!uploadFolder.exists()) {
-                    uploadFolder.mkdirs();
+                // Generate unique filename
+                String extension = "";
+                int dotIndex = submittedFileName.lastIndexOf('.');
+                if (dotIndex > 0 && dotIndex < submittedFileName.length() - 1) {
+                    extension = submittedFileName.substring(dotIndex);  // includes the dot
                 }
+                String fileNameInBucket = "profile-pictures/pfp_" + System.currentTimeMillis() + extension;
 
-                File file = new File(uploadFolder, fileName);
-                part.write(file.getAbsolutePath());
+                try (InputStream inputStream = part.getInputStream()) {
+                    // Get the S3 client (from your utility class)
+                    S3Client s3 = S3Connection.getClient();
 
-                // Path stored in DB (URL-accessible)
-                picturePath = request.getContextPath() + "/uploads/" + fileName;
+                    String bucketName = "ehas";
+
+                    // Build and execute upload
+                    PutObjectRequest putRequest = PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(fileNameInBucket)
+                            .contentType(contentType)
+                            .build();
+
+                    s3.putObject(putRequest, RequestBody.fromInputStream(inputStream, fileSize));
+
+                    // Generate public URL (only works if bucket is PUBLIC)
+                    // If bucket is PRIVATE, use presigned URL instead (see below)
+                    picturePath = S3Connection.getPublicObjectUrl(bucketName, fileNameInBucket);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Handle error: log, show message, fallback to default
+                    picturePath = "uploads/default.png";  // keep fallback on error
+                }
             }
 
             // FORM VALIDATION

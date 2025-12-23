@@ -2,23 +2,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package com.ehas.controller;
 
+import com.ehas.util.DBConnection;
 import com.ehas.util.S3Connection;
-import jakarta.servlet.RequestDispatcher;
+import com.ehas.util.SupabaseSSL;
 import java.io.IOException;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  *
- * @author ASUS
+ * @author ACER
  */
-@WebServlet("/login")
-public class loginServlet extends HttpServlet {
+@WebServlet("/test-s3")
+public class TestS3Servlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,10 +34,30 @@ public class loginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        RequestDispatcher view = request.getRequestDispatcher("/views/login.jsp");
-        view.forward(request, response);
-
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            
+            Connection conn = DBConnection.createConnection();
+        
+            if (conn != null) {
+                out.println("✅ Connected to Supabase successfully!");
+                try {
+                    conn.close(); // Always close the connection after testing
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                out.println("❌ Failed to connect to Supabase.");
+            }
+        
+            out.println( SupabaseSSL.createTrustManagers().length);
+            /* TODO output your page here. You may use following sample code. */
+            if (S3Connection.testUpload()) {
+                out.println("Upload test passed! Check your Supabase bucket.");
+            } else {
+                out.println("Upload test failed. Check server logs.");
+            }
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

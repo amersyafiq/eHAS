@@ -28,7 +28,6 @@ public class PatientDAO {
             pstmt.setString(2, generateMRN(patient.getAccountID()));
             pstmt.executeUpdate();
 
-            conn.close();
             pstmt.close();
 
         } catch (SQLException e) {

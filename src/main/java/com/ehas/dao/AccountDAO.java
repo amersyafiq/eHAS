@@ -48,7 +48,6 @@ public class AccountDAO {
             if (rs.next()) { last_inserted_id = rs.getInt(1); }
 
             rs.close();
-            conn.close();
             pstmt.close();
 
             return last_inserted_id;
@@ -76,7 +75,6 @@ public class AccountDAO {
 
             rs.close();
             pstmt.close();
-            conn.close();
 
             return exists;
         } catch (SQLException e) {
