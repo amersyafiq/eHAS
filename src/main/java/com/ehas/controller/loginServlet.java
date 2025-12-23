@@ -6,11 +6,18 @@ package com.ehas.controller;
 
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
+import java.sql.Connection;
+
+import com.ehas.dao.AccountDAO;
+import com.ehas.model.Account;
+import com.ehas.util.DBConnection;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -18,25 +25,8 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @WebServlet("/login")
 public class loginServlet extends HttpServlet {
+    
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
-        RequestDispatcher view = request.getRequestDispatcher("/views/login.jsp");
-        view.forward(request, response);
-
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -48,7 +38,8 @@ public class loginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        RequestDispatcher view = request.getRequestDispatcher("/views/login.jsp");
+        view.forward(request, response);
     }
 
     /**
@@ -62,7 +53,32 @@ public class loginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+        Connection conn = null;
+        try {
+            String email = request.getParameter("email"); 
+            String password = request.getParameter("password"); 
+            
+            conn = DBConnection.createConnection();
+            AccountDAO accountDAO = new AccountDAO();
+            Account account = accountDAO.authenticateAccount(email, password, conn);
+            System.out.println(account);
+
+            if (account != null) {
+                HttpSession session = request.getSession();
+                session.setAttribute("loggedUser", account);
+                session.setAttribute("role", account.getAccountType());
+                session.setMaxInactiveInterval(30 * 60);
+
+                response.sendRedirect(request.getContextPath() + "/");
+            } else {
+                request.setAttribute("error", "Invalid username or password.");
+                RequestDispatcher view = request.getRequestDispatcher("/views/login.jsp");
+                view.forward(request, response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

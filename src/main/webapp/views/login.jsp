@@ -26,48 +26,31 @@
                             <div class="col-md-10">
                                 <div class="card card-transparent shadow-none d-flex justify-content-center mb-0 auth-card">
                                     <div class="card-body z-3 px-md-0 px-lg-4">
-                                        <a href="./vendor/dashboard/index.html" class="navbar-brand d-flex align-items-center mb-3">
-
-                                            <!--Logo start-->
-                                            <div class="logo-main">
-                                                <div class="logo-normal">
-                                                    <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
-                                                    <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
-                                                    <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
-                                                    <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
-                                                    </svg>
-                                                </div>
-                                                <div class="logo-mini">
-                                                    <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2" transform="rotate(-45 -0.757324 19.2427)" fill="currentColor"/>
-                                                    <rect x="7.72803" y="27.728" width="28" height="4" rx="2" transform="rotate(-45 7.72803 27.728)" fill="currentColor"/>
-                                                    <rect x="10.5366" y="16.3945" width="16" height="4" rx="2" transform="rotate(45 10.5366 16.3945)" fill="currentColor"/>
-                                                    <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2" transform="rotate(45 10.5562 -0.556152)" fill="currentColor"/>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            <!--logo End-->
-
-
-
-
-                                            <h4 class="logo-title ms-3">Hope UI</h4>
+                                        <a href="${pageContext.request.contextPath}/" class="navbar-brand d-flex align-items-center justify-content-center mb-3">
+                                            <img src="${pageContext.request.contextPath}/vendor/assets/images/logo.png" alt="Taman Medical Centre Logo" style="height: 7rem;">
                                         </a>
-                                        <h2 class="mb-2 text-center">Sign In</h2>
+                                        <h2 class="mb-2 text-center">Log In</h2>
                                         <p class="text-center">Login to stay connected.</p>
-                                        <form>
+                                        
+                                        <%-- Login Form Start --%>
+                                        <form action="${pageContext.request.contextPath}/login" method="POST"  class="row g-3 needs-validation" novalidate>
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <div class="form-group">
                                                         <label for="email" class="form-label">Email</label>
-                                                        <input type="email" class="form-control" id="email" aria-describedby="email" placeholder=" ">
+                                                        <input type="email" name="email" class="form-control" id="email" required aria-describedby="email" placeholder=" ">
+                                                        <div class="invalid-feedback">
+                                                            Email cannot be empty.
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-12">
                                                     <div class="form-group">
                                                         <label for="password" class="form-label">Password</label>
-                                                        <input type="password" class="form-control" id="password" aria-describedby="password" placeholder=" ">
+                                                        <input type="password" name="password" class="form-control" id="password" required aria-describedby="password" placeholder=" ">
+                                                        <div class="invalid-feedback">
+                                                            Password cannot be empty.
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-12 d-flex justify-content-between">
@@ -81,27 +64,12 @@
                                             <div class="d-flex justify-content-center">
                                                 <button type="submit" class="btn btn-primary">Sign In</button>
                                             </div>
-                                            <p class="text-center my-3">or sign in with other accounts?</p>
-                                            <div class="d-flex justify-content-center">
-                                                <ul class="list-group list-group-horizontal list-group-flush">
-                                                    <li class="list-group-item border-0 pb-0">
-                                                        <a href="#"><img src="./vendor/assets/images/brands/fb.svg" alt="fb"></a>
-                                                    </li>
-                                                    <li class="list-group-item border-0 pb-0">
-                                                        <a href="#"><img src="./vendor/assets/images/brands/gm.svg" alt="gm"></a>
-                                                    </li>
-                                                    <li class="list-group-item border-0 pb-0">
-                                                        <a href="#"><img src="./vendor/assets/images/brands/im.svg" alt="im"></a>
-                                                    </li>
-                                                    <li class="list-group-item border-0 pb-0">
-                                                        <a href="#"><img src="./vendor/assets/images/brands/li.svg" alt="li"></a>
-                                                    </li>
-                                                </ul>
-                                            </div>
                                             <p class="mt-3 text-center">
-                                                Don’t have an account? <a href="sign-up.html" class="text-underline">Click here to sign up.</a>
+                                                Don’t have an account? <a href="${pageContext.request.contextPath}/register" class="text-underline">Click here to sign up.</a>
                                             </p>
                                         </form>
+                                        <%-- Login Form END --%>
+
                                     </div>
                                 </div>
                             </div>
@@ -118,7 +86,7 @@
                         </div>
                     </div>
                     <div class="col-md-6 d-md-block d-none bg-primary p-0 mt-n1 vh-100 overflow-hidden">
-                        <img src="./vendor/assets/images/auth/01.png" class="img-fluid gradient-main animated-scaleX" alt="images">
+                        <img src="${pageContext.request.contextPath}/vendor/assets/images/auth/01.png" class="img-fluid gradient-main animated-scaleX" alt="images">
                     </div>
                 </div>
             </section>
