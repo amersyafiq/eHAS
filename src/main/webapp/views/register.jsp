@@ -136,6 +136,9 @@
                                                 <div class="col-12 d-flex justify-content-center">
                                                     <button class="btn btn-primary" type="submit">Register</button>
                                                 </div>
+                                                <p class="mt-3 text-center">
+                                                    Already have an account? <a href="${pageContext.request.contextPath}/login" class="text-underline">Click here to login.</a>
+                                                </p>
                                             </form>
                                         </div>
                                         <%-- Register Form END --%>

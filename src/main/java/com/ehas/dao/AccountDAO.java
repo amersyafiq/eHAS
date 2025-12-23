@@ -6,6 +6,8 @@ package com.ehas.dao;
 
 import com.ehas.model.Account;
 import com.ehas.util.passwordHash;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,8 +26,11 @@ public class AccountDAO {
     private static final String INSERT_ACCOUNT_SQL = 
         "INSERT INTO ACCOUNT (fullName, password, ic_passport, phoneNo, email, gender, dateOfBirth, picturePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    private static final String SELECT_EMAIL_SQL=
+    private static final String SELECT_EMAIL_SQL =
         "SELECT EMAIL FROM ACCOUNT WHERE EMAIL = ?";
+
+    private static final String SELECT_ACCOUNT_SQL =
+        "SELECT * FROM ACCOUNT WHERE EMAIL = ? AND PASSWORD = ?";
 
     // Used in 'registerServlet' for Account Registration
     // return last_inserted_id (for patient/doctor)
@@ -60,7 +65,23 @@ public class AccountDAO {
     }
 
     // For account login
-    public Account authenticateAccount(Account account) {
+    public Account authenticateAccount(String email, String password, Connection conn) {
+        // String hashedPassword = passwordHash.doHashing(password);
+        try {
+            pstmt = conn.prepareStatement(SELECT_ACCOUNT_SQL);
+            pstmt.setString(1, email);
+            pstmt.setString(2, password);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                return extractAccount(rs);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            System.err.println("Error while finding account: " + e.getMessage());
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -82,5 +103,23 @@ public class AccountDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public Account extractAccount(ResultSet rs) throws SQLException {
+
+        int accountID = rs.getInt("accountID");
+        String fullName = rs.getString("fullName");
+        String password = rs.getString("password");
+        String ic_passport = rs.getString("ic_passport");
+        String email = rs.getString("email");
+        String phoneNo = rs.getString("phoneNo");
+        String gender = rs.getString("gender");
+        String dateOfBirth = rs.getString("dateOfBirth");
+        String accountType = rs.getString("accountType");
+        String picturePath = rs.getString("picturePath");
+        String createdAt = rs.getString("createdAt");
+        String updatedAt = rs.getString("updatedAt");
+
+        return new Account(accountID, fullName, password, ic_passport, email, phoneNo, gender, dateOfBirth, accountType, picturePath, createdAt, updatedAt);
     }
 }

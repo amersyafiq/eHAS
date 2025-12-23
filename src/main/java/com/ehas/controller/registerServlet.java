@@ -7,9 +7,7 @@ package com.ehas.controller;
 import jakarta.servlet.RequestDispatcher;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -20,9 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import java.sql.Connection;
 
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -53,8 +49,6 @@ import com.ehas.util.S3Connection;
     maxRequestSize = 6L * 1024 * 1024    // 6 MB
 )
 public class registerServlet extends HttpServlet {
-
-    private static final String UPLOAD_DIR = "uploads";
 
     /**
      * Handles the HTTP <code>GET</code> method.

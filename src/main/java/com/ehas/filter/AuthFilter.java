@@ -8,6 +8,8 @@ import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import com.ehas.model.Account;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -20,7 +22,7 @@ import jakarta.servlet.ServletResponse;
  * This filter is applied to all URLs ("/*") in the application.
  * It intercepts every incoming HTTP request to perform common tasks such as:
  * - Logging the requested path
- * - Checking user authentication/authorization (TODO)
+ * - Checking user authentication/authorization
  * - Setting common response headers
  * - Blocking unauthorized access to protected resources
  * 
@@ -40,6 +42,20 @@ public class AuthFilter implements Filter {
         String contextPath = request.getContextPath();
         String uri = request.getRequestURI();
         String path = uri.substring(contextPath.length());
+
+        // If user already logged in and requesting root, redirect to role-specific dashboard
+        HttpSession session = request.getSession(false);
+        Account account = (session == null) ? null : (Account) session.getAttribute("loggedUser");
+        if (account != null && (path.equals("/") || path.equals("/index"))) {
+            String type = account.getAccountType();
+            if ("Patient".equalsIgnoreCase(type) && !path.startsWith("/views/patient/")) {
+                request.getRequestDispatcher("/views/patient/index.jsp").forward(request, response);
+                return;
+            } else if ("Doctor".equalsIgnoreCase(type) && !path.startsWith("/views/doctor/")) {
+                request.getRequestDispatcher("/views/doctor/index.jsp").forward(request, response);
+                return;
+            }
+        }
         
         // Public Path (Static Resources, e.g.: CSS, JS, etc )
         if (
