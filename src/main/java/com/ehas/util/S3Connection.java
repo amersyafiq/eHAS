@@ -20,7 +20,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 public class S3Connection {
     private static final String S3_ENDPOINT = "https://hsnmkvymudhpkbobwhtc.storage.supabase.co/storage/v1/s3";  // For client operations (upload/download)
-    private static final String PUBLIC_BASE_URL = "https://hsnmkvymudhpkbobwhtc.storage.supabase.co/object/public/";  // For serving public files
+    private static final String PUBLIC_BASE_URL = "https://hsnmkvymudhpkbobwhtc.storage.supabase.co/storage/v1/object/public/";  // For serving public files
 
     private static final String ACCESS_KEY = "4b842fe3695317546abfe32b4063bbfa";
     private static final String SECRET_KEY = "103bf94859fa99d1d188b9078ead42cc75d1cb65a2efdae079a25554e7bd7818";
