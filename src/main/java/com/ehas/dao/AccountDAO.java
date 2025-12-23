@@ -66,11 +66,11 @@ public class AccountDAO {
 
     // For account login
     public Account authenticateAccount(String email, String password, Connection conn) {
-        // String hashedPassword = passwordHash.doHashing(password);
+        String hashedPassword = passwordHash.doHashing(password);
         try {
             pstmt = conn.prepareStatement(SELECT_ACCOUNT_SQL);
             pstmt.setString(1, email);
-            pstmt.setString(2, password);
+            pstmt.setString(2, hashedPassword);
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
