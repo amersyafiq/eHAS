@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>eHAS</title>
+    <title><%= (pageTitle != null && !pageTitle.trim().isEmpty()) ? pageTitle + " | eHAS" : "eHAS" %></title>
     
     <!-- Base path for all relative URLs -->
     <base href="${pageContext.request.contextPath}/">
@@ -33,11 +33,12 @@
     <!-- Flatpickr css -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/vendor/assets/vendor/flatpickr/dist/flatpickr.min.css">
 
+    <!-- SwiperSlider css -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/vendor/assets/vendor/swiperSlider/swiper-bundle.min.css">
+
     <!-- Custom CSS for index view -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/vendor/assets/css/index.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/vendor/landing-pages/assets/css/landing-pages.min.css">
 
-    <!-- SwiperSlider css -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/vendor/assets/vendor/swiperSlider/swiper-bundle.min.css">
 
 </head>

@@ -11,9 +11,9 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr" data-bs-theme="light" data-bs-theme-color="theme-color-default">
     <%@ include file="../partials/head.jsp" %>
-    <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
+    <body class="uikit" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         <!-- loader Start -->
         <div id="loading">
             <div class="loader simple-loader">
@@ -46,17 +46,7 @@
         
         
             <!-- Footer Section Start -->
-            <footer class="footer">
-                <div class="footer-body">
-                    <ul class="left-panel list-inline mb-0 p-0">
-                        <li class="list-inline-item"><a href="${pageContext.request.contextPath}/vendor/dashboard/extra/privacy-policy.html">Privacy Policy</a></li>
-                        <li class="list-inline-item"><a href="${pageContext.request.contextPath}/vendor/dashboard/extra/terms-of-service.html">Terms of Use</a></li>
-                    </ul>
-                    <div class="right-panel">
-                        ©<script>document.write(new Date().getFullYear())</script> Taman Medical Center
-                    </div>
-                </div>
-            </footer>
+            <%@ include file="../partials/footer.jsp" %>
             <!-- Footer Section END -->    
 
         </main>

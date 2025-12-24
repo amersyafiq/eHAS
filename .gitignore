@@ -1,1 +1,6 @@
 /target/
+# Local environment file (contains secrets)
+.env
+
+# Uploads and generated files
+/uploads/

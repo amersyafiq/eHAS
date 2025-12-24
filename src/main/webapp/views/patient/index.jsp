@@ -4,11 +4,12 @@
     Author     : ASUS
 --%>
 
+<% String pageTitle = "Dashboard"; %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr" data-bs-theme="light" data-bs-theme-color="theme-color-default">
     <%@ include file="../partials/head.jsp" %>
-    <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
+    <body class="uikit" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         <!-- loader Start -->
         <div id="loading">
             <div class="loader simple-loader">
@@ -31,19 +32,24 @@
             
                 <%-- Main Section Start --%>
                 <div class="conatiner-fluid content-inner p-3">
-                    <div class="row m-2">
-                        <div class="col-12 card bg-primary py-4 px-5 mb-4" style="background: linear-gradient(90deg, #0048B2 0%, #3B8AFF 100%);">
-                            <h4 class="text-white fw-bold">Welcome back, <%= account.getFullName() %></h4>
-                            <p class="text-white fs-5 m-0 fw-lighter">You are a <%= account.getAccountType() %></p>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card bg-primary py-4 px-5 mb-3" style="background: linear-gradient(90deg, #0048B2 0%, #3B8AFF 100%);">
+                                <h4 class="text-white fw-bold">Welcome back, <%= account.getFullName() %></h4>
+                                <p class="text-white fs-5 m-0 fw-lighter">You are a <%= account.getAccountType() %></p>
+                            </div>
                         </div>
-                        <div class="col-6 card bg-white py-4 px-5">
-                            <h4 class="text-white fw-bold">Welcome back, <%= account.getFullName() %></h4>
-                            <p class="text-white fs-5 m-0 fw-lighter">You are a <%= account.getAccountType() %></p>
+                        <div class="col-12 col-md-6 pe-md-1">
+                            <div class="card py-4 px-5">
+                                aaaa
+                            </div>
                         </div>
-                        <div class="col-6 card bg-white py-4 px-5">
-                            <h4 class="text-white fw-bold">Welcome back, <%= account.getFullName() %></h4>
-                            <p class="text-white fs-5 m-0 fw-lighter">You are a <%= account.getAccountType() %></p>
+                        <div class="col-12 col-md-6 pw-md-1">
+                            <div class="card py-4 px-5">
+                                ssss
+                            </div>
                         </div>
+                        
                     
                     
                     </div>
@@ -58,17 +64,7 @@
         
         
             <!-- Footer Section Start -->
-            <footer class="footer">
-                <div class="footer-body">
-                    <ul class="left-panel list-inline mb-0 p-0">
-                        <li class="list-inline-item"><a href="${pageContext.request.contextPath}/vendor/dashboard/extra/privacy-policy.html">Privacy Policy</a></li>
-                        <li class="list-inline-item"><a href="${pageContext.request.contextPath}/vendor/dashboard/extra/terms-of-service.html">Terms of Use</a></li>
-                    </ul>
-                    <div class="right-panel">
-                        ©<script>document.write(new Date().getFullYear())</script> Taman Medical Centre
-                    </div>
-                </div>
-            </footer>
+            <%@ include file="../partials/footer.jsp" %>
             <!-- Footer Section END -->    
 
         </main>
