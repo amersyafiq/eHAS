@@ -176,7 +176,7 @@
                         <div class="breadcrumb">
                             <span>Appointments / Book Appointment / Booking Summary</span>
                             <button class="home-btn"
-                                    onclick="location.href='${pageContext.request.contextPath}/dashboard'">
+                                    onclick="location.href='./'">
                                 Home
                             </button>
                         </div>

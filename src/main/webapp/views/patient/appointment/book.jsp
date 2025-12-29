@@ -1,6 +1,6 @@
 <%-- 
     Document   : book.jsp
-    Created on : 28 Dec 2025, 9:49:31 pm
+    Created on : 28 Dec 2025, 9:49:31 pm
     Author     : User
 --%>
 
@@ -114,6 +114,16 @@
                 border-radius: 6px;
                 cursor: not-allowed;
             }
+            
+            /* Force hide all Choices.js wrappers in this form */
+            .card .choices {
+                display: none !important;
+            }
+            
+            /* Make sure native selects are visible */
+            .card select {
+                display: block !important;
+            }
         </style>
     </head>
     <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
@@ -145,15 +155,14 @@
                         <!-- Header -->
                         <div class="breadcrumb">
                             <span>Appointments / Book Appointment</span>
-                            <button class="home-btn">Home</button>
+                            <button class="home-btn" onclick="location.href='./'">Home</button>
                         </div>
 
                         <!-- Form -->
                         <div class="card">
-
                             <div class="form-group">
                                 <label>Hospital Branch: <span class="required">*</span></label>
-                                <select id="hospital" onchange="onHospitalChange()">
+                                <select id="hospital" class="no-choices" data-trigger="" onchange="onHospitalChange()">
                                     <option value="">Select hospital/clinic</option>
                                     <option value="H1">Hospital A</option>
                                     <option value="H2">Hospital B</option>
@@ -163,14 +172,14 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Specialisation: <span class="required">*</span></label>
-                                    <select id="specialisation" disabled onchange="onSpecialisationChange()">
+                                    <select id="specialisation" class="no-choices" data-trigger="" disabled onchange="onSpecialisationChange()">
                                         <option value="">Select specialisation</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Doctor Name: <span class="required">*</span></label>
-                                    <select id="doctor" disabled onchange="onDoctorChange()">
+                                    <select id="doctor" class="no-choices" data-trigger="" disabled onchange="onDoctorChange()">
                                         <option value="">Select doctor</option>
                                     </select>
                                 </div>
@@ -186,7 +195,7 @@
 
                                 <div class="form-group">
                                     <label>Time: <span class="required">*</span></label>
-                                    <select id="timeSlot" disabled onchange="onTimeChange()">
+                                    <select id="timeSlot" class="no-choices" data-trigger="" disabled onchange="onTimeChange()">
                                         <option value="">Select time</option>
                                     </select>
                                 </div>
@@ -234,121 +243,198 @@
             }
         };
 
-        function resetSelect(id, label) {
+        // Prevent Choices.js from interfering
+        document.addEventListener('DOMContentLoaded', () => {
+            const selectIds = ['hospital', 'specialisation', 'doctor', 'timeSlot'];
+            selectIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.setAttribute('data-choice', 'false');
+                    // Clear any existing Choices.js instances
+                    if (el.choices) {
+                        try { el.choices.destroy(); } catch(e) {}
+                    }
+                }
+            });
+        });
+
+        // FIXED: Reset select with proper placeholder (not disabled)
+        function resetSelect(id, placeholderText) {
             const el = document.getElementById(id);
-            el.innerHTML = `<option value="">Select ${label}</option>`;
+            el.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = placeholderText;
+            placeholder.selected = true;
+            el.appendChild(placeholder);
             el.disabled = true;
         }
 
+        // Hospital changed - FIXED: Use proper placeholder text
         function onHospitalChange() {
-            resetSelect("specialisation", "specialisation");
-            resetSelect("doctor", "doctor");
-            resetSelect("timeSlot", "time");
+            resetSelect('specialisation', 'Select specialisation');
+            resetSelect('doctor', 'Select doctor');
+            resetSelect('timeSlot', 'Select time');
 
-            document.getElementById("appointmentDate").value = "";
-            document.getElementById("appointmentDate").disabled = true;
-            document.getElementById("nextBtn").disabled = true;
+            document.getElementById('appointmentDate').value = '';
+            document.getElementById('appointmentDate').disabled = true;
+            disableNext();
 
-            const hospital = document.getElementById("hospital").value;
+            const hospital = document.getElementById('hospital').value;
             if (!hospital) return;
 
-            const spec = document.getElementById("specialisation");
+            const spec = document.getElementById('specialisation');
             spec.disabled = false;
 
             Object.keys(data[hospital]).forEach(s => {
-                const opt = document.createElement("option");
+                const opt = document.createElement('option');
                 opt.value = s;
-                opt.text = s;
+                opt.textContent = s;
                 spec.appendChild(opt);
             });
         }
 
+        // Specialisation changed - FIXED: Use proper placeholder text
         function onSpecialisationChange() {
-            resetSelect("doctor", "doctor");
-            resetSelect("timeSlot", "time");
+            resetSelect('doctor', 'Select doctor');
+            resetSelect('timeSlot', 'Select time');
 
-            document.getElementById("appointmentDate").value = "";
-            document.getElementById("appointmentDate").disabled = true;
-            document.getElementById("nextBtn").disabled = true;
+            document.getElementById('appointmentDate').value = '';
+            document.getElementById('appointmentDate').disabled = true;
+            disableNext();
 
-            const hospital = document.getElementById("hospital").value;
-            const spec = document.getElementById("specialisation").value;
-
+            const hospital = document.getElementById('hospital').value;
+            const spec = document.getElementById('specialisation').value;
             if (!hospital || !spec) return;
 
-            const doctor = document.getElementById("doctor");
+            const doctor = document.getElementById('doctor');
             doctor.disabled = false;
 
             data[hospital][spec].forEach(d => {
-                const opt = document.createElement("option");
+                const opt = document.createElement('option');
                 opt.value = d;
-                opt.text = d;
+                opt.textContent = d;
                 doctor.appendChild(opt);
             });
         }
 
+        // Doctor changed - FIXED: Don't reset timeSlot here, just disable it
         function onDoctorChange() {
-            resetSelect("timeSlot", "time");
-            document.getElementById("appointmentDate").value = "";
-            document.getElementById("nextBtn").disabled = true;
+            const timeSlot = document.getElementById('timeSlot');
+            timeSlot.innerHTML = '<option value="">Select time</option>';
+            timeSlot.disabled = true;
 
-            if (document.getElementById("doctor").value) {
-                document.getElementById("appointmentDate").disabled = false;
-            }
+            document.getElementById('appointmentDate').value = '';
+            document.getElementById('appointmentDate').disabled = false;
+            disableNext();
         }
 
+        // Date changed - FIXED: Clear time slot properly
         function onDateChange() {
-            resetSelect("timeSlot", "time");
-            document.getElementById("nextBtn").disabled = true;
+            const timeSlot = document.getElementById('timeSlot');
+            timeSlot.innerHTML = '<option value="">Select time</option>';
+            timeSlot.disabled = true;
+            disableNext();
 
-            if (document.getElementById("appointmentDate").value) {
-                document.getElementById("timeSlot").disabled = false;
-                generateTimeSlots();
-            }
+            const date = document.getElementById('appointmentDate').value;
+            if (!date) return;
+
+            generateTimeSlots();
         }
 
+        // Time changed
         function onTimeChange() {
-            const nextBtn = document.getElementById("nextBtn");
-            const hasValue = document.getElementById("timeSlot").value !== "";
-
+            const nextBtn = document.getElementById('nextBtn');
+            const hasValue = document.getElementById('timeSlot').value !== '';
             nextBtn.disabled = !hasValue;
 
             if (hasValue) {
-                nextBtn.classList.remove("btn-disabled");
-                nextBtn.classList.add("btn-primary");
+                nextBtn.classList.remove('btn-disabled');
+                nextBtn.classList.add('btn-primary');
             } else {
-                nextBtn.classList.remove("btn-primary");
-                nextBtn.classList.add("btn-disabled");
+                nextBtn.classList.remove('btn-primary');
+                nextBtn.classList.add('btn-disabled');
             }
         }
 
-        /* ===== Time Slot Generator ===== */
-        function generateTimeSlots() {
-            const timeSelect = document.getElementById("timeSlot");
-            timeSelect.innerHTML = "";
+        // Disable next button
+        function disableNext() {
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = true;
+            nextBtn.classList.remove('btn-primary');
+            nextBtn.classList.add('btn-disabled');
+        }
 
+        // FIXED: Format time properly
+        function formatTime12(hour, min) {
+            var period = "a.m.";
+            if (hour > 12) {
+                period = "p.m.";
+                hour = hour - 12;
+            } else if (hour === 12) {
+                period = "p.m.";
+            }
+            if (min === 0) {
+                return hour + ":" + min + "0 " + period;
+            } else {
+                return hour + ":" + min + " " + period;
+            }
+        }
+
+        // FIXED: Generate time slots - ensure proper display
+        function generateTimeSlots() {
+            const timeSelect = document.getElementById('timeSlot');
+            timeSelect.innerHTML = '<option value="">Select time</option>';
+
+            // Define all possible time slots (8:00 AM to 5:00 PM, 30-minute intervals)
+            const allTimeSlots = [
+                "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
+                "16:00", "16:30", "17:00"
+            ];
+
+            // Define booked time slots (replace with dynamic data from server if needed)
             const bookedSlots = ["09:00", "10:30", "13:00", "15:30"];
 
-            for (let hour = 8; hour < 17; hour++) {
-                for (let min = 0; min < 60; min += 30) {
+            console.log("All time slots:", allTimeSlots);
+            console.log("Booked slots:", bookedSlots);
 
-                    if (hour === 16 && min === 30) break;
+            // Loop through all time slots and create options
+            allTimeSlots.forEach(timeSlot => {
+                const [hourStr, minuteStr] = timeSlot.split(':');
+                const hour = parseInt(hourStr, 10);
+                const minute = parseInt(minuteStr, 10);
+                // Format for display (12-hour format)
+                const displayTime = formatTime12(hour, minute);
+                console.log(displayTime);
 
-                    const time = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
-                    const opt = document.createElement("option");
+                // Check if this slot is booked
+                const isBooked = bookedSlots.includes(timeSlot);
 
-                    opt.value = time;
-                    opt.text = bookedSlots.includes(time)
-                        ? `${time} - Booked`
-                        : `${time} - Available`;
+                // Create option element
+                const option = document.createElement('option');
+                option.value = timeSlot;
 
-                    if (bookedSlots.includes(time)) {
-                        opt.disabled = true;
-                    }
-
-                    timeSelect.appendChild(opt);
+                // Set display text based on availability
+                if (isBooked) {
+                    option.textContent = displayTime + ' - Booked';
+                    option.disabled = true;
+                    option.style.color = '#999';
+                    option.style.backgroundColor = '#f5f5f5';
+                } else {
+                    option.textContent = displayTime + ' - Available';
                 }
-            }
+
+                // Add to select
+                timeSelect.appendChild(option);
+            });
+
+            // Enable the select
+            timeSelect.disabled = false;
+
+            // Log for debugging
+            console.log(`Generated ${allTimeSlots.length} time slots`);
+            console.log(`${bookedSlots.length} slots are booked`);
         }
         </script>
     </body>
