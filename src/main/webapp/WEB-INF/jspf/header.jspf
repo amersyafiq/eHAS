@@ -27,10 +27,10 @@
                 <li class="nav-item dropdown custom-drop">
                     <a class="py-0 nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="caption me-3 d-none d-md-block ">
-                            <h6 class="mb-0 caption-title text-end"><%= account.getFullName() %></h6>
-                            <p class="mb-0 caption-sub-title text-end"><%= account.getAccountType() %></p>
+                            <h6 class="mb-0 caption-title text-end">${sessionScope.loggedUser.fullName}</h6>
+                            <p class="mb-0 caption-sub-title text-end">${sessionScope.loggedUser.accountType}</p>
                         </div>
-                        <img src="<%= account.getPicturePath() %>" alt="User-Profile" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded">
+                        <img src="${sessionScope.loggedUser.picturePath}" alt="User-Profile" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">Profile</a></li>

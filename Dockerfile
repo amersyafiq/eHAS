@@ -1,0 +1,1 @@
+FROM payara/server-full:7.2025.2

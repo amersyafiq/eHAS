@@ -4,11 +4,13 @@
     Author     : ASUS
 --%>
 
-<% String pageTitle = "Login"; %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-bs-theme="light" data-bs-theme-color="theme-color-default">
-    <%@ include file="partials/head.jsp" %>
+    
+    <%@ include file="/WEB-INF/jspf/head.jspf" %>
+    <c:set var="pageTitle" value="Login" />
+    
     <body class="uikit" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         <!-- loader Start -->
         <div id="loading">
@@ -102,6 +104,6 @@
             </section>
         </div>
 
-        <%@ include file="partials/scripts.jsp" %>
+        <%@ include file="/WEB-INF/jspf/scripts.jspf" %>
     </body>
 </html>

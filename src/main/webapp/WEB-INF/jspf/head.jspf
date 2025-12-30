@@ -3,11 +3,22 @@
     Created on : Dec 16, 2025, 11:22:15?PM
     Author     : ASUS
 --%>
-
+<%@ page pageEncoding="UTF-8" %>
+<%@ page import="com.ehas.model.Account" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql"%>
+<sql:setDataSource 
+    var="myDatasource"
+    driver="org.postgresql.Driver"
+    url="jdbc:postgresql://aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres"
+    user="postgres.hsnmkvymudhpkbobwhtc" 
+    password="uOOogouybBFbvMIU"
+/>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title><%= (pageTitle != null && !pageTitle.trim().isEmpty()) ? pageTitle + " | eHAS" : "eHAS" %></title>
+    <title>${(not empty pageTitle and not empty fn:trim(pageTitle)) ? pageTitle.concat(' | eHAS') : 'eHAS'}</title>
     
     <!-- Base path for all relative URLs -->
     <base href="${pageContext.request.contextPath}/">
