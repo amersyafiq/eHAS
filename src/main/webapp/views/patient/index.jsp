@@ -65,7 +65,7 @@
                         <li class="list-inline-item"><a href="${pageContext.request.contextPath}/vendor/dashboard/extra/terms-of-service.html">Terms of Use</a></li>
                     </ul>
                     <div class="right-panel">
-                        ©<script>document.write(new Date().getFullYear())</script> Taman Medical Center
+                        ©<script>document.write(new Date().getFullYear())</script> TAMAN HOSPITAL
                     </div>
                 </div>
             </footer>
