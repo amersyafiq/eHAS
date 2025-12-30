@@ -35,11 +35,6 @@ public class appointmentListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        HttpSession session = request.getSession(false);
-        Account account = (Account) session.getAttribute("loggedUser");
-    
-
         RequestDispatcher view = request.getRequestDispatcher("/views/patient/appointment.list.jsp");
         view.forward(request, response);
     }

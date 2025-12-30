@@ -25,3 +25,27 @@
 .services-card > div {
     background-color: #d8ddfa;
 }
+
+.appointment-tab {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.appointment-tab.active {
+    border-bottom-color: var(--bs-primary);
+    color: #000;
+    font-weight: 600;
+}
+
+.card-anim {
+    transition: all 0.3s;
+}
+
+.card-anim:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 5px 10px #3a57e81f);
+}
