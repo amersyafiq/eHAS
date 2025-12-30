@@ -15,7 +15,7 @@ import java.sql.Statement;
  * @author ASUS
  */
 public class AppointmentDAO {
-    private Conenction conn = null;
+    private Connection conn = null;
     private PreparedStatement pstmt = null;
     private ResultSet rs = null;
 }
