@@ -7,8 +7,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html lang="en" dir="ltr" data-bs-theme="light" data-bs-theme-color="theme-color-default">
-    <%@ include file="views/partials/head.jsp" %>
-    <body class="uikit " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">        
+
+    <%@ include file="/WEB-INF/jspf/head.jspf" %>
+    <c:set var="pageTitle" value="Home" />
+
+    <body class="uikit" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">        
         <!-- loader Start -->
         <div id="loading">
             <div class="loader simple-loader">
@@ -29,7 +32,7 @@
                         </a>
 
                         <nav class="d-none d-lg-flex gap-4">
-                            <a class="text-reset" href="#about-us">About Us</a>
+                            <a class="text-reset" href="#about-us">About Uss</a>
                             <a class="text-reset" href="#services">Our Services</a>
                             <a class="text-reset" href="#book-appointment">Book Appointment</a>
                             <a class="text-reset" href="#contact-us">Contact Us</a>
@@ -402,7 +405,7 @@
                 </div>
             </footer>
 
-            <%@ include file="views/partials/scripts.jsp" %>
+            <%@ include file="/WEB-INF/jspf/scripts.jspf" %>
         </main>
 
     </body>

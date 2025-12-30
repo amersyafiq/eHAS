@@ -1,0 +1,77 @@
+name: Build, Push to GHCR, and Deploy (Manual Only)
+
+env:
+  PACKAGE_NAME: 'ehas' 
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "YES" to confirm build, release, push, and deploy'
+        required: true
+        default: 'no'
+        type: string
+
+jobs:
+  versioning-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # For creating tags/releases
+      packages: write      # For GHCR push
+    outputs:
+      new-version: ${{ steps.semantic-release.outputs.new_release_version }}
+    # Only proceed if user confirmed
+    if: github.event.inputs.confirm == 'YES'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # Needed for semantic-release git history
+
+      - name: Create Semantic Release config
+        run: |
+          cat > .releaserc.json << 'EOF'
+          {
+            "branches": ["master"],
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator",
+              "@semantic-release/github"
+            ]
+          }
+          EOF
+
+      - name: Semantic Release
+        id: semantic-release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: versioning-and-release
+    if: github.event.inputs.confirm == 'YES'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and Push Docker Image to GHCR
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/$PACKAGE_NAME
+          NEW_VERSION=${{ needs.versioning-and-release.outputs.new-version }}
+
+          if [ -z "$NEW_VERSION" ]; then
+            NEW_VERSION="latest"
+            echo "No new version detected — tagging as 'latest' only"
+          else
+            echo "New release version: $NEW_VERSION"
+          fi
+
+          docker build -t $IMAGE_NAME:$NEW_VERSION -t $IMAGE_NAME:latest .
+          docker push $IMAGE_NAME:$NEW_VERSION
+          docker push $IMAGE_NAME:latest
