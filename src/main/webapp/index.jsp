@@ -4,11 +4,12 @@
     Author     : ASUS
 --%>
 
+<% String pageTitle = "Home"; %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html lang="en" dir="ltr" data-bs-theme="light" data-bs-theme-color="theme-color-default">
     <%@ include file="views/partials/head.jsp" %>
-    <body class="uikit " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">        
+    <body class="uikit" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">        
         <!-- loader Start -->
         <div id="loading">
             <div class="loader simple-loader">

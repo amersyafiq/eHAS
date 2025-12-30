@@ -42,5 +42,4 @@
 <script src="${pageContext.request.contextPath}/vendor/assets/vendor/swiperSlider/swiper-bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/vendor/landing-pages/assets/js/custom.js" defer></script>
 
-
 <script src="${pageContext.request.contextPath}/vendor/assets/js/plugins/prism.mini.js"></script>

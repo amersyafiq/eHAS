@@ -36,7 +36,10 @@
 
                 <%-- Dashbaord (All) --%>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="${pageContext.request.contextPath}/">
+                    <a 
+                        class="nav-link <%= (pageTitle != null && pageTitle.equalsIgnoreCase("Dashboard")) ? "active" : "" %>" 
+                        aria-current="page" href="${pageContext.request.contextPath}/"
+                    >
                         <i class="icon">
                             <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
                                 <path opacity="0.4" d="M16.0756 2H19.4616C20.8639 2 22.0001 3.14585 22.0001 4.55996V7.97452C22.0001 9.38864 20.8639 10.5345 19.4616 10.5345H16.0756C14.6734 10.5345 13.5371 9.38864 13.5371 7.97452V4.55996C13.5371 3.14585 14.6734 2 16.0756 2Z" fill="currentColor"></path>
@@ -52,7 +55,18 @@
 
                     <%-- Patient View Start --%>
                     <% if (account != null && account.getAccountType().equalsIgnoreCase("Patient")) { %>
-                    <a class="nav-link" data-bs-toggle="collapse" href="#horizontal-menu" role="button" aria-expanded="false" aria-controls="horizontal-menu">
+                    <a 
+                        class="nav-link 
+                            <%= (pageTitle != null && (pageTitle.equalsIgnoreCase("Book Appointment") || pageTitle.equalsIgnoreCase("My Appointments"))) 
+                                ? "" : "collapsed" %> 
+                            <%= (pageTitle != null && (pageTitle.equalsIgnoreCase("Book Appointment") || pageTitle.equalsIgnoreCase("My Appointments"))) 
+                                ? "active" : "" %>"
+                        data-bs-toggle="collapse" 
+                        href="#horizontal-menu" 
+                        role="button" 
+                        aria-expanded="<%= (pageTitle != null && (pageTitle.equalsIgnoreCase("Book Appointment") || pageTitle.equalsIgnoreCase("My Appointments"))) ? "true" : "false" %>"
+                        aria-controls="horizontal-menu"
+                    >
                         <i class="icon">
                             <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
                                 <path opacity="0.4" d="M10.0833 15.958H3.50777C2.67555 15.958 2 16.6217 2 17.4393C2 18.2559 2.67555 18.9207 3.50777 18.9207H10.0833C10.9155 18.9207 11.5911 18.2559 11.5911 17.4393C11.5911 16.6217 10.9155 15.958 10.0833 15.958Z" fill="currentColor"></path>
@@ -68,22 +82,12 @@
                             </svg>
                         </i>
                     </a>
-                    <ul class="sub-nav collapse" id="horizontal-menu" data-bs-parent="#sidebar-menu">
+                    <ul class="sub-nav collapse <%= (pageTitle != null && (pageTitle.equalsIgnoreCase("Book Appointment") || pageTitle.equalsIgnoreCase("My Appointments"))) ? "show" : "" %>" id="horizontal-menu" data-bs-parent="#sidebar-menu">
                         <li class="nav-item">
-                            <a class="nav-link " href="${pageContext.request.contextPath}/appointment/book">
-                            <i class="icon">
-                                    <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
-                                        <g>
-                                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                                        </g>
-                                    </svg>
-                                </i>
-                            <i class="sidenav-mini-icon"> B </i>
-                            <span class="item-name"> Book Appointment </span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link " href="${pageContext.request.contextPath}/appointment/list">
+                            <a 
+                                class="nav-link <%= (pageTitle != null && pageTitle.equalsIgnoreCase("Book Appointment")) ? "active" : "" %>" 
+                                href="${pageContext.request.contextPath}/appointment/book"
+                            >
                                 <i class="icon">
                                     <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
                                         <g>
@@ -91,8 +95,24 @@
                                         </g>
                                     </svg>
                                 </i>
+                                <i class="sidenav-mini-icon"> B </i>
+                                <span class="item-name"> Book Appointment </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a 
+                                class="nav-link <%= (pageTitle != null && pageTitle.equalsIgnoreCase("My Appointments")) ? "active" : "" %>"
+                                href="${pageContext.request.contextPath}/appointment/list"
+                            >
+                                <i class="icon">
+                                    <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
+                                        <g>
+                                            <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                                        </g>
+                                    </svg>
+                                </i>
                                 <i class="sidenav-mini-icon"> A </i>
-                                <span class="item-name"> My Appointments </span>
+                                <span class="item-name">My Appointments</span>
                             </a>
                         </li>
                     </ul>
