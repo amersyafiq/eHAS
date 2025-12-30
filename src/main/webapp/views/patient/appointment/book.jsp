@@ -164,17 +164,16 @@
                             <div class="form-group">
                                 <label>Hospital Branch: <span class="required">*</span></label>
                                 <select id="hospital" class="no-choices" data-trigger="" onchange="onHospitalChange()">
-                                    <option value="">Select hospital/clinic</option>
-                                    <option value="H1">Hospital A</option>
-                                    <option value="H2">Hospital B</option>
+                                    <option value="H1" selected>Hospital A</option> <!-- Always selected -->
                                 </select>
                             </div>
 
                             <div class="form-group">
                                 <label>Doctor Name: <span class="required">*</span></label>
-                                <select id="doctor" class="no-choices" data-trigger="" disabled onchange="onDoctorChange()">
-                                    <option value="">Select doctor</option>
-                                </select>
+                                <select id="doctor" class="no-choices" data-trigger="" onchange="onDoctorChange()">
+                                <option value="">Select doctor</option>
+                                <option value="11" <c:if test="${selectedDoctor == '11'}">selected</c:if>>Dr Farid Hassan</option>
+                            </select>
                             </div>
 
                             <h3>Select Date and Time</h3>
@@ -193,8 +192,11 @@
                                 </div>
                             </div>
 
-                            <div class="button-row">
-                                <button type="button" onclick="location.href='${pageContext.request.contextPath}/appointment/summary'" class="btn-disabled" id="nextBtn" disabled>Next</button>
+                            <div class="button-row" style="grid-template-columns: 1fr 1fr;">
+                                <button type="button" class="btn-primary"
+                                        onclick="fetchTimeslot()">Fetch Timeslot</button>
+                                <button type="button" onclick="location.href='${pageContext.request.contextPath}/appointment/summary'" 
+                                        class="btn-disabled" id="nextBtn" disabled>Next</button>
                             </div>
 
                         </div>
@@ -213,24 +215,30 @@
         </main>
         
         <%@ include file="/WEB-INF/jspf/scripts.jspf" %>
-        <script>
-        const data = {
-            H1: ["Dr. Ali", "Dr. Ahmad", "Dr. Siti"], // combine all doctors
-            H2: ["Dr. Zainal", "Dr. Amin"]
-        };
-
-        // Prevent Choices.js from interfering
+       <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const selectIds = ['hospital', 'doctor', 'timeSlot'];
-            selectIds.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.setAttribute('data-choice', 'false');
-                    if (el.choices) {
-                        try { el.choices.destroy(); } catch(e) {}
-                    }
-                }
-            });
+            const doctor = document.getElementById('doctor');
+            const appointmentDate = document.getElementById('appointmentDate');
+            const hospital = document.getElementById('hospital');
+
+            // Doctor is always enabled
+            doctor.disabled = false;
+
+            // Enable date input if a doctor is selected
+            if (doctor.value) {
+                appointmentDate.disabled = false;
+            }
+
+            // If hospital is already selected, make sure doctor is enabled
+            if (hospital && hospital.value) {
+                doctor.disabled = false;
+            }
+
+            // Preserve previously selected doctor
+            const selectedDoctor = '${selectedDoctor}';
+            if (selectedDoctor && doctor) {
+                doctor.value = selectedDoctor;
+            }
         });
 
         function resetSelect(id, placeholderText) {
@@ -245,26 +253,37 @@
         }
 
         function onHospitalChange() {
-            resetSelect('doctor', 'Select doctor');
-            resetSelect('timeSlot', 'Select time');
+            // Just clear date and time, but don't disable doctor
+            const appointmentDate = document.getElementById('appointmentDate');
+            const timeSlot = document.getElementById('timeSlot');
 
-            document.getElementById('appointmentDate').value = '';
-            document.getElementById('appointmentDate').disabled = true;
+            // Reset timeslot and date
+            timeSlot.innerHTML = '<option value="">Select time</option>';
+            timeSlot.disabled = true;
+
+            appointmentDate.value = '';
+            appointmentDate.disabled = true;
+
             disableNext();
-
-            const hospital = document.getElementById('hospital').value;
-            if (!hospital) return;
-
-            const doctor = document.getElementById('doctor');
-            doctor.disabled = false;
-
-            data[hospital].forEach(d => {
-                const opt = document.createElement('option');
-                opt.value = d;
-                opt.textContent = d;
-                doctor.appendChild(opt);
-            });
         }
+
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const hospital = document.getElementById('hospital');
+            const doctor = document.getElementById('doctor');
+
+            // If hospital is already selected (after page reload), enable doctor
+            if (hospital && hospital.value) {
+                doctor.disabled = false;
+            }
+
+            // If a doctor was previously selected, make sure it's selected
+            const selectedDoctor = '${selectedDoctor}';
+            if (selectedDoctor && doctor) {
+                doctor.value = selectedDoctor;
+            }
+        });
 
         function onDoctorChange() {
             const timeSlot = document.getElementById('timeSlot');
@@ -325,41 +344,40 @@
         }
 
         function generateTimeSlots() {
-            const timeSelect = document.getElementById('timeSlot');
-            timeSelect.innerHTML = '<option value="">Select time</option>';
-
-            const allTimeSlots = [
-                "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
-                "16:00", "16:30", "17:00"
-            ];
-
-            const bookedSlots = ["09:00", "10:30", "13:00", "15:30"];
+            const bookedSlots = <c:out value='${bookedSlots}' />; // list from servlet
 
             allTimeSlots.forEach(timeSlot => {
-                const [hourStr, minuteStr] = timeSlot.split(':');
-                const hour = parseInt(hourStr, 10);
-                const minute = parseInt(minuteStr, 10);
-                const displayTime = formatTime12(hour, minute);
-
-                const isBooked = bookedSlots.includes(timeSlot);
-
                 const option = document.createElement('option');
                 option.value = timeSlot;
 
-                if (isBooked) {
-                    option.textContent = displayTime + ' - Booked';
+                if (bookedSlots.includes(timeSlot)) {
+                    option.textContent = formatTime12(...timeSlot.split(':')) + ' - Booked';
                     option.disabled = true;
                     option.style.color = '#999';
                     option.style.backgroundColor = '#f5f5f5';
                 } else {
-                    option.textContent = displayTime + ' - Available';
+                    option.textContent = formatTime12(...timeSlot.split(':')) + ' - Available';
                 }
 
                 timeSelect.appendChild(option);
             });
-
             timeSelect.disabled = false;
+        }
+        function fetchTimeslot() {
+            const doctor = document.getElementById('doctor').value;
+            const date = document.getElementById('appointmentDate').value;
+
+            if (!doctor || !date) {
+                alert("Please select doctor and date first!");
+                return;
+            }
+
+            // Hospital is always H1, so you can hardcode it
+            const hospital = "H1";
+
+            // Redirect back to servlet with parameters
+            const url = `${window.location.pathname}?hospital=${encodeURIComponent(hospital)}&doctor=${encodeURIComponent(doctor)}&appointmentDate=${encodeURIComponent(date)}`;
+            window.location.href = url;
         }
         </script>
     </body>
