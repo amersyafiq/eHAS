@@ -1,36 +1,33 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.ehas.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- *
- * @author User
- */
-@WebServlet(name = "summrayServlet", urlPatterns = {"/appointment/summary"})
+@WebServlet(name = "summaryServlet", urlPatterns = {"/appointment/summary"})
 public class summaryServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.println("summaryServlet accessed!"); // for debugging
+        // Retrieve doctor, date, time from query parameters
+        String doctor = request.getParameter("doctor");
+        String date = request.getParameter("date");
+        String time = request.getParameter("time");
+
+        // Pass to JSP
+        request.setAttribute("doctor", doctor);
+        request.setAttribute("date", date);
+        request.setAttribute("time", time);
+
+        // Forward to summary.jsp
         request.getRequestDispatcher("/views/patient/appointment/summary.jsp")
                .forward(request, response);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doGet(request, response);
-    }
+    // POST not needed here because form submits to ConfirmBookServlet
 }
