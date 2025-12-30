@@ -170,20 +170,11 @@
                                 </select>
                             </div>
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Specialisation: <span class="required">*</span></label>
-                                    <select id="specialisation" class="no-choices" data-trigger="" disabled onchange="onSpecialisationChange()">
-                                        <option value="">Select specialisation</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Doctor Name: <span class="required">*</span></label>
-                                    <select id="doctor" class="no-choices" data-trigger="" disabled onchange="onDoctorChange()">
-                                        <option value="">Select doctor</option>
-                                    </select>
-                                </div>
+                            <div class="form-group">
+                                <label>Doctor Name: <span class="required">*</span></label>
+                                <select id="doctor" class="no-choices" data-trigger="" disabled onchange="onDoctorChange()">
+                                    <option value="">Select doctor</option>
+                                </select>
                             </div>
 
                             <h3>Select Date and Time</h3>
@@ -224,24 +215,17 @@
         <%@ include file="/WEB-INF/jspf/scripts.jspf" %>
         <script>
         const data = {
-            H1: {
-                Cardiology: ["Dr. Ali", "Dr. Ahmad"],
-                Dermatology: ["Dr. Siti"]
-            },
-            H2: {
-                Cardiology: ["Dr. Zainal"],
-                Orthopedic: ["Dr. Amin"]
-            }
+            H1: ["Dr. Ali", "Dr. Ahmad", "Dr. Siti"], // combine all doctors
+            H2: ["Dr. Zainal", "Dr. Amin"]
         };
 
         // Prevent Choices.js from interfering
         document.addEventListener('DOMContentLoaded', () => {
-            const selectIds = ['hospital', 'specialisation', 'doctor', 'timeSlot'];
+            const selectIds = ['hospital', 'doctor', 'timeSlot'];
             selectIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.setAttribute('data-choice', 'false');
-                    // Clear any existing Choices.js instances
                     if (el.choices) {
                         try { el.choices.destroy(); } catch(e) {}
                     }
@@ -249,7 +233,6 @@
             });
         });
 
-        // FIXED: Reset select with proper placeholder (not disabled)
         function resetSelect(id, placeholderText) {
             const el = document.getElementById(id);
             el.innerHTML = '';
@@ -261,9 +244,7 @@
             el.disabled = true;
         }
 
-        // Hospital changed - FIXED: Use proper placeholder text
         function onHospitalChange() {
-            resetSelect('specialisation', 'Select specialisation');
             resetSelect('doctor', 'Select doctor');
             resetSelect('timeSlot', 'Select time');
 
@@ -274,34 +255,10 @@
             const hospital = document.getElementById('hospital').value;
             if (!hospital) return;
 
-            const spec = document.getElementById('specialisation');
-            spec.disabled = false;
-
-            Object.keys(data[hospital]).forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s;
-                opt.textContent = s;
-                spec.appendChild(opt);
-            });
-        }
-
-        // Specialisation changed - FIXED: Use proper placeholder text
-        function onSpecialisationChange() {
-            resetSelect('doctor', 'Select doctor');
-            resetSelect('timeSlot', 'Select time');
-
-            document.getElementById('appointmentDate').value = '';
-            document.getElementById('appointmentDate').disabled = true;
-            disableNext();
-
-            const hospital = document.getElementById('hospital').value;
-            const spec = document.getElementById('specialisation').value;
-            if (!hospital || !spec) return;
-
             const doctor = document.getElementById('doctor');
             doctor.disabled = false;
 
-            data[hospital][spec].forEach(d => {
+            data[hospital].forEach(d => {
                 const opt = document.createElement('option');
                 opt.value = d;
                 opt.textContent = d;
@@ -309,7 +266,6 @@
             });
         }
 
-        // Doctor changed - FIXED: Don't reset timeSlot here, just disable it
         function onDoctorChange() {
             const timeSlot = document.getElementById('timeSlot');
             timeSlot.innerHTML = '<option value="">Select time</option>';
@@ -320,7 +276,6 @@
             disableNext();
         }
 
-        // Date changed - FIXED: Clear time slot properly
         function onDateChange() {
             const timeSlot = document.getElementById('timeSlot');
             timeSlot.innerHTML = '<option value="">Select time</option>';
@@ -333,7 +288,6 @@
             generateTimeSlots();
         }
 
-        // Time changed
         function onTimeChange() {
             const nextBtn = document.getElementById('nextBtn');
             const hasValue = document.getElementById('timeSlot').value !== '';
@@ -348,7 +302,6 @@
             }
         }
 
-        // Disable next button
         function disableNext() {
             const nextBtn = document.getElementById('nextBtn');
             nextBtn.disabled = true;
@@ -356,7 +309,6 @@
             nextBtn.classList.add('btn-disabled');
         }
 
-        // FIXED: Format time properly
         function formatTime12(hour, min) {
             var period = "a.m.";
             if (hour > 12) {
@@ -372,41 +324,29 @@
             }
         }
 
-        // FIXED: Generate time slots - ensure proper display
         function generateTimeSlots() {
             const timeSelect = document.getElementById('timeSlot');
             timeSelect.innerHTML = '<option value="">Select time</option>';
 
-            // Define all possible time slots (8:00 AM to 5:00 PM, 30-minute intervals)
             const allTimeSlots = [
                 "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
                 "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
                 "16:00", "16:30", "17:00"
             ];
 
-            // Define booked time slots (replace with dynamic data from server if needed)
             const bookedSlots = ["09:00", "10:30", "13:00", "15:30"];
 
-            console.log("All time slots:", allTimeSlots);
-            console.log("Booked slots:", bookedSlots);
-
-            // Loop through all time slots and create options
             allTimeSlots.forEach(timeSlot => {
                 const [hourStr, minuteStr] = timeSlot.split(':');
                 const hour = parseInt(hourStr, 10);
                 const minute = parseInt(minuteStr, 10);
-                // Format for display (12-hour format)
                 const displayTime = formatTime12(hour, minute);
-                console.log(displayTime);
 
-                // Check if this slot is booked
                 const isBooked = bookedSlots.includes(timeSlot);
 
-                // Create option element
                 const option = document.createElement('option');
                 option.value = timeSlot;
 
-                // Set display text based on availability
                 if (isBooked) {
                     option.textContent = displayTime + ' - Booked';
                     option.disabled = true;
@@ -416,16 +356,10 @@
                     option.textContent = displayTime + ' - Available';
                 }
 
-                // Add to select
                 timeSelect.appendChild(option);
             });
 
-            // Enable the select
             timeSelect.disabled = false;
-
-            // Log for debugging
-            console.log(`Generated ${allTimeSlots.length} time slots`);
-            console.log(`${bookedSlots.length} slots are booked`);
         }
         </script>
     </body>
