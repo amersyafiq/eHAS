@@ -7,7 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <%@ include file="../../partials/head.jsp" %>
+    <%@ include file="/WEB-INF/jspf/head.jspf" %>
+    <c:set var="pageTitle" value="Book Appointment" />
     <head>
         <style>
             body {
@@ -156,14 +157,14 @@
         <!-- loader END -->
 
         <%-- Navigation Start --%>
-        <%@ include file="../../partials/nav.jsp" %>
+        <%@ include file="/WEB-INF/jspf/nav.jspf" %>
         <%-- Navigation END --%>
         
         <main class="main-content">
             <div class="position-relative iq-banner">
 
                 <!--Header Start-->
-                <%@ include file="../../partials/header.jsp" %>
+                <%@ include file="/WEB-INF/jspf/header.jspf" %>
                 <%-- Header END --%>
             
                 <%-- Main Section Start --%>
@@ -263,21 +264,11 @@
         
         
             <!-- Footer Section Start -->
-            <footer class="footer">
-                <div class="footer-body">
-                    <ul class="left-panel list-inline mb-0 p-0">
-                        <li class="list-inline-item"><a href="${pageContext.request.contextPath}/vendor/dashboard/extra/privacy-policy.html">Privacy Policy</a></li>
-                        <li class="list-inline-item"><a href="${pageContext.request.contextPath}/vendor/dashboard/extra/terms-of-service.html">Terms of Use</a></li>
-                    </ul>
-                    <div class="right-panel">
-                        ©<script>document.write(new Date().getFullYear())</script> Taman Medical Center
-                    </div>
-                </div>
-            </footer>
-            <!-- Footer Section END -->    
+            <%@ include file="/WEB-INF/jspf/footer.jspf" %>
+            <!-- Footer Section END -->   
 
         </main>
         
-        <%@ include file="../../partials/scripts.jsp" %>
+        <%@ include file="/WEB-INF/jspf/scripts.jspf" %>
     </body>
 </html>
