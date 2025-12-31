@@ -1,32 +1,27 @@
-# Stage 1: Build the WAR (same as before)
-FROM maven:3-eclipse-temurin-17-alpine AS builder
+# ========= STAGE 1: Build the WAR with Maven =========
+# Use official Maven image with JDK 21 (latest stable Maven ~3.9.x)
+FROM maven:3.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
+# Copy pom.xml first for better Docker layer caching
 COPY pom.xml .
+
+# Download dependencies (cached if pom.xml unchanged)
 RUN mvn dependency:go-offline -B
 
+# Copy source code and build the WAR
 COPY src ./src
+RUN mvn clean package -DskipTests -B
 
-RUN mvn package -DskipTests -B
+# ========= STAGE 2: Runtime with Payara Server =========
+# Latest Payara 7 Community (Jakarta EE 11 certified, Dec 2025)
+FROM payara/server-full:latest
 
-# DEBUG: List target contents
-RUN echo "=== Contents of /app/target/ ===" && \
-    ls -la /app/target/ && \
-    ls -la /app/target/*.war || echo "No .war found"
+# Copy the built WAR to Payara's autodeploy directory
+COPY --from=builder /app/target/*.war $DEPLOY_DIR/
 
-# Stage 2: Runtime with official Eclipse GlassFish (Jakarta EE 11 compatible)
-# Latest tag points to the most recent GlassFish 8.x milestone/release supporting Jakarta EE 11
-FROM ghcr.io/eclipse-ee4j/glassfish:latest
-
-# Remove default apps (optional, reduces noise)
-RUN rm -rf /glassfish/domains/domain1/autodeploy/*
-
-# Copy your WAR and rename to ROOT.war for root context[](http://host/)
-# Or use eHAS-1.0-SNAPSHOT.war for http://host/eHAS-1.0-SNAPSHOT/
-COPY --from=builder /app/target/eHAS-1.0-SNAPSHOT.war /glassfish/domains/domain1/autodeploy/ROOT.war
-
-# Expose ports (8080 HTTP, 4848 admin console - optional for production)
-EXPOSE 8080 4848
-
-# GlassFish starts automatically via the base image's ENTRYPOINT/CMD
+# Expose ports
+EXPOSE 8080 
+EXPOSE 8181
+EXPOSE 4848
