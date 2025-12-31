@@ -1,62 +1,188 @@
 package com.ehas.dao;
 
 import com.ehas.model.Timeslot;
+import com.ehas.util.DBConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TimeslotDAO {
+    private Connection conn;
+    private PreparedStatement pstmt;
+    private ResultSet rs;
 
-    private static final SimpleDateFormat INPUT_FORMAT = new SimpleDateFormat("hh:mm a"); // "08:30 AM"
-    private static final SimpleDateFormat SQL_TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    private static final String GET_AVAILABLE_TIMESLOTS_BY_SCHEDULE = 
+        "SELECT timeslotid, starttime, endtime, isavailable, scheduleid " +
+        "FROM timeslot " +
+        "WHERE scheduleid = ? AND isavailable = true " +
+        "AND timeslotid NOT IN (" +
+        "   SELECT timeslotid FROM appointment WHERE status != 'CANCELLED'" +
+        ") " +
+        "ORDER BY starttime";
+    
+    private static final String GET_TIMESLOT_BY_ID = 
+        "SELECT timeslotid, starttime, endtime, isavailable, scheduleid " +
+        "FROM timeslot " +
+        "WHERE timeslotid = ?";
+    
+    private static final String GET_ALL_TIMESLOTS_BY_SCHEDULE = 
+        "SELECT timeslotid, starttime, endtime, isavailable, scheduleid " +
+        "FROM timeslot " +
+        "WHERE scheduleid = ? " +
+        "ORDER BY starttime";
+    
+    private static final String INSERT_TIMESLOT = 
+        "INSERT INTO timeslot (starttime, endtime, isavailable, scheduleid) " +
+        "VALUES (?, ?, ?, ?)";
+    
+    private static final String UPDATE_TIMESLOT_AVAILABILITY = 
+        "UPDATE timeslot SET isavailable = ? WHERE timeslotid = ?";
 
-    // Get timeslot by scheduleID and startTime
-    public Timeslot getTimeslotByScheduleAndTime(int scheduleID, String startTime, Connection conn) throws SQLException {
-        String sql = "SELECT * FROM timeslot WHERE scheduleID = ? AND startTime = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, scheduleID);
-            stmt.setTime(2, convertToSqlTime(startTime));
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Timeslot slot = new Timeslot();
-                    slot.setTimeslotID(rs.getInt("timeslotID"));
-                    slot.setScheduleID(rs.getInt("scheduleID"));
-                    slot.setStartTime(rs.getString("startTime"));
-                    slot.setEndTime(rs.getString("endTime"));
-                    slot.setIsAvailable(rs.getBoolean("isAvailable"));
-                    return slot;
-                }
+    // Get available timeslots by schedule (excludes booked slots)
+    public List<Timeslot> getAvailableTimeslotsBySchedule(int scheduleId) {
+        List<Timeslot> timeslots = new ArrayList<>();
+        try {
+            conn = DBConnection.createConnection();
+            pstmt = conn.prepareStatement(GET_AVAILABLE_TIMESLOTS_BY_SCHEDULE);
+            pstmt.setInt(1, scheduleId);
+            
+            rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                timeslots.add(extractTimeslot(rs));
             }
+            
+            rs.close();
+            pstmt.close();
+            conn.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return timeslots;
+    }
+
+    // Get all timeslots by schedule (includes unavailable)
+    public List<Timeslot> getAllTimeslotsBySchedule(int scheduleId) {
+        List<Timeslot> timeslots = new ArrayList<>();
+        try {
+            conn = DBConnection.createConnection();
+            pstmt = conn.prepareStatement(GET_ALL_TIMESLOTS_BY_SCHEDULE);
+            pstmt.setInt(1, scheduleId);
+            
+            rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                timeslots.add(extractTimeslot(rs));
+            }
+            
+            rs.close();
+            pstmt.close();
+            conn.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return timeslots;
+    }
+
+    // Get timeslot by ID
+    public Timeslot getTimeslotById(int timeslotId) {
+        try {
+            conn = DBConnection.createConnection();
+            pstmt = conn.prepareStatement(GET_TIMESLOT_BY_ID);
+            pstmt.setInt(1, timeslotId);
+            
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Timeslot timeslot = extractTimeslot(rs);
+                
+                rs.close();
+                pstmt.close();
+                conn.close();
+                
+                return timeslot;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    // Insert a new timeslot
-    public int createTimeslot(Timeslot slot, Connection conn) throws SQLException {
-        String sql = "INSERT INTO timeslot (scheduleID, startTime, endTime, isAvailable) VALUES (?, ?, ?, ?) RETURNING timeslotID";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, slot.getScheduleID());
-            stmt.setTime(2, convertToSqlTime(slot.getStartTime()));
-            stmt.setTime(3, convertToSqlTime(slot.getEndTime()));
-            stmt.setBoolean(4, slot.isIsAvailable());
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getInt("timeslotID");
+    // Create new timeslot
+    public Timeslot createTimeslot(Timeslot timeslot) {
+        try {
+            conn = DBConnection.createConnection();
+            pstmt = conn.prepareStatement(INSERT_TIMESLOT, Statement.RETURN_GENERATED_KEYS);
+            
+            // Convert LocalTime to java.sql.Time
+            pstmt.setTime(1, Time.valueOf(timeslot.getStartTime()));
+            pstmt.setTime(2, Time.valueOf(timeslot.getEndTime()));
+            pstmt.setBoolean(3, timeslot.isAvailable());
+            pstmt.setInt(4, timeslot.getTimeslotID());
+            
+            int affectedRows = pstmt.executeUpdate();
+            
+            if (affectedRows > 0) {
+                rs = pstmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int timeslotId = rs.getInt(1);
+                    
+                    rs.close();
+                    pstmt.close();
+                    conn.close();
+                    
+                    return getTimeslotById(timeslotId);
+                }
             }
+            
+            pstmt.close();
+            conn.close();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return 0;
+        return null;
     }
 
-    // Converts "08:30 a.m." or "2:00 p.m." to java.sql.Time
-    private Time convertToSqlTime(String timeStr) {
+    // Update timeslot availability
+    public boolean updateTimeslotAvailability(int timeslotId, boolean isAvailable) {
         try {
-            java.util.Date parsed = INPUT_FORMAT.parse(timeStr.replace(".", "").toUpperCase()); // "08:30 a.m." -> "08:30 AM"
-            return new Time(parsed.getTime());
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid time format: " + timeStr, e);
+            conn = DBConnection.createConnection();
+            pstmt = conn.prepareStatement(UPDATE_TIMESLOT_AVAILABILITY);
+            
+            pstmt.setBoolean(1, isAvailable);
+            pstmt.setInt(2, timeslotId);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            
+            pstmt.close();
+            conn.close();
+            
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return false;
+    }
+
+    private Timeslot extractTimeslot(ResultSet rs) throws SQLException {
+        int timeslotId = rs.getInt("timeslotid");
+        LocalTime startTime = rs.getObject("starttime", LocalTime.class);
+        LocalTime endTime = rs.getObject("endtime", LocalTime.class);        
+        boolean isAvailable = rs.getBoolean("isavailable");
+        int scheduleId = rs.getInt("scheduleid");
+        
+        return new Timeslot(timeslotId, startTime, endTime, isAvailable, scheduleId);
     }
 }

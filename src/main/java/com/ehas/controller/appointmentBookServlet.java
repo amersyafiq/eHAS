@@ -6,11 +6,9 @@ package com.ehas.controller;
 
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
-import java.sql.Connection;
+import java.io.PrintWriter;
 
-import com.ehas.dao.AccountDAO;
 import com.ehas.model.Account;
-import com.ehas.util.DBConnection;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,17 +21,14 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author ASUS
  */
-@WebServlet("/login")
-public class loginServlet extends HttpServlet {
-    
-    private AccountDAO accountDAO;
-
-    @Override
-    public void init() throws ServletException {
-       
-    	// Initialize DAO object. Called once when servlet loads. 
-    	accountDAO = new AccountDAO();
-    }
+@WebServlet({
+    "/appointment/book",
+    "/appointment/book/specialities",
+    "/appointment/book/doctors",
+    "/appointment/book/dates",
+    "/appointment/book/timeslots"
+})
+public class appointmentBookServlet extends HttpServlet {
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -46,8 +41,26 @@ public class loginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        RequestDispatcher view = request.getRequestDispatcher("/views/login.jsp");
-        view.forward(request, response);
+        
+        String path = request.getServletPath();
+        
+        switch (path) {
+            case "/appointment/book/specialities":
+                // getSpecialities(request, response);
+                break;
+            case "/appointment/book/doctors":
+                // getDoctors(request, response);
+                break;
+            case "/appointment/book/dates":
+                // getDates(request, response);
+                break;
+            case "/appointment/book/timeslots":
+                // getTimeslots(request, response);
+                break;
+            default:
+                RequestDispatcher view = request.getRequestDispatcher("/views/patient/appointment.book.jsp");
+                view.forward(request, response);
+        }
     }
 
     /**
@@ -61,28 +74,16 @@ public class loginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        Connection conn = null;
-        try {
-            String email = request.getParameter("email"); 
-            String password = request.getParameter("password"); 
-            
-            conn = DBConnection.createConnection();
-            Account account = accountDAO.authenticateAccount(email, password, conn);
-
-            if (account != null) {
-                HttpSession session = request.getSession();
-                session.setAttribute("loggedUser", account);
-                session.setMaxInactiveInterval(30 * 60);
-
-                response.sendRedirect(request.getContextPath() + "/");
-            } else {
-                request.setAttribute("error", "Invalid username or password.");
-                RequestDispatcher view = request.getRequestDispatcher("/views/login.jsp");
-                view.forward(request, response);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }

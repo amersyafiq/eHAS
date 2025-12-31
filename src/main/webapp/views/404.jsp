@@ -7,7 +7,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <%@ include file="./partials/head.jsp" %>
+    <%@ include file="/WEB-INF/jspf/head.jspf" %>
+    <c:set var="pageTitle" value="404" />
+
     <body class=" " data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         
         <!-- loader Start -->

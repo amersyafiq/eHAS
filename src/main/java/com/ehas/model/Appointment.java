@@ -4,6 +4,7 @@
  */
 package com.ehas.model;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  *
@@ -13,8 +14,9 @@ import java.io.Serializable;
 public class Appointment implements Serializable {
     private int appointmentID, patientID, doctorID, timeslotID;
     private Integer followUpAppointmentID;
-    private String status, concern, diagnosis, treatment, notes, createdAt;
+    private String status, concern, diagnosis, treatment, notes;
     private double consultationFee, treatmentFee, totalAmount;
+    LocalDate createdAt;
 
     public Appointment() { }
 
@@ -23,7 +25,7 @@ public class Appointment implements Serializable {
                        String diagnosis, String treatment, String notes,
                        Integer followUpAppointmentID,
                        double consultationFee, double treatmentFee, double totalAmount,
-                       String createdAt) {
+                       LocalDate createdAt) {
 
         this.appointmentID = appointmentID;
         this.status = status;
@@ -54,7 +56,7 @@ public class Appointment implements Serializable {
     public double getConsultationFee() { return consultationFee; }
     public double getTreatmentFee() { return treatmentFee; }
     public double getTotalAmount() { return totalAmount; }
-    public String getCreatedAt() { return createdAt; }
+    public LocalDate getCreatedAt() { return createdAt; }
 
     public void setAppointmentID(int appointmentID) { this.appointmentID = appointmentID; }
     public void setStatus(String status) { this.status = status; }
@@ -69,5 +71,5 @@ public class Appointment implements Serializable {
     public void setConsultationFee(double consultationFee) { this.consultationFee = consultationFee; }
     public void setTreatmentFee(double treatmentFee) { this.treatmentFee = treatmentFee; }
     public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
-    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+    public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
 }

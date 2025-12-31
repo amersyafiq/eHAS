@@ -7,6 +7,7 @@ package com.ehas.dao;
 import com.ehas.model.Account;
 import com.ehas.util.passwordHash;
 
+import java.time.*;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,7 +46,7 @@ public class AccountDAO {
             pstmt.setString(4, account.getPhoneNo());
             pstmt.setString(5, account.getEmail());
             pstmt.setString(6, account.getGender());
-            pstmt.setString(7, account.getDateOfBirth());
+            pstmt.setDate(7, java.sql.Date.valueOf(account.getDateOfBirth()));
             pstmt.setString(8, account.getPicturePath());
             pstmt.executeUpdate();
 
@@ -114,11 +115,11 @@ public class AccountDAO {
         String email = rs.getString("email");
         String phoneNo = rs.getString("phoneNo");
         String gender = rs.getString("gender");
-        String dateOfBirth = rs.getString("dateOfBirth");
+        LocalDate dateOfBirth = rs.getObject("dateOfBirth", LocalDate.class);
         String accountType = rs.getString("accountType");
         String picturePath = rs.getString("picturePath");
-        String createdAt = rs.getString("createdAt");
-        String updatedAt = rs.getString("updatedAt");
+        LocalDateTime createdAt = rs.getObject("createdAt", LocalDateTime.class);
+        LocalDateTime updatedAt = rs.getObject("updatedAt", LocalDateTime.class);
 
         return new Account(accountID, fullName, password, ic_passport, email, phoneNo, gender, dateOfBirth, accountType, picturePath, createdAt, updatedAt);
     }

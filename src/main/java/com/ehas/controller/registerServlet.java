@@ -20,6 +20,7 @@ import jakarta.servlet.http.Part;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Connection;
+import java.time.LocalDate;
 
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -49,6 +50,17 @@ import com.ehas.util.S3Connection;
     maxRequestSize = 6L * 1024 * 1024    // 6 MB
 )
 public class registerServlet extends HttpServlet {
+
+    private AccountDAO accountDAO;
+    private PatientDAO patientDAO;
+
+    @Override
+    public void init() throws ServletException {
+       
+    	// Initialize DAO object. Called once when servlet loads. 
+    	accountDAO = new AccountDAO();
+    	patientDAO = new PatientDAO();
+    }
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -89,7 +101,8 @@ public class registerServlet extends HttpServlet {
             String phoneNo = request.getParameter("phoneNo"); 
             String email = request.getParameter("email"); 
             String gender = "Male";
-            String dateOfBirth = request.getParameter("dateOfBirth");
+            String dateOfBirthStr = request.getParameter("dateOfBirth");
+            LocalDate dateOfBirth = LocalDate.parse(dateOfBirthStr);
 
             String picturePath = "uploads/default.png";  // fallback in your webapp (e.g., default profile pic)
 
@@ -151,9 +164,6 @@ public class registerServlet extends HttpServlet {
 
             conn = DBConnection.createConnection();
             conn.setAutoCommit(false);
-
-            AccountDAO accountDAO = new AccountDAO();
-            PatientDAO patientDAO = new PatientDAO();
 
             // Check email exists
             boolean emailExists = accountDAO.isEmailExists(email, conn);
