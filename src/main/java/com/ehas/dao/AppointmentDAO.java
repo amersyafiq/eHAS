@@ -8,14 +8,12 @@ import com.ehas.model.Appointment;
 import com.ehas.util.DBConnection;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +23,8 @@ public class AppointmentDAO {
     private ResultSet rs;
 
     private static final String INSERT_APPOINTMENT = 
-        "INSERT INTO appointment (status, concern, patientid, doctorid, timeslotid) " +
-        "VALUES (?, ?, ?, ?, ?)";
+        "INSERT INTO APPOINTMENT (CONCERN, PATIENTID, DOCTORID, TIMESLOTID) " +
+        "VALUES (?, ?, ?, ?)";
     
     private static final String GET_APPOINTMENT_BY_ID = 
         "SELECT appointmentid, status, concern, patientid, doctorid, timeslotid, " +
@@ -63,51 +61,24 @@ public class AppointmentDAO {
     private static final String UPDATE_APPOINTMENT_FOLLOWUP = 
         "UPDATE appointment SET followupappointmentid = ? WHERE appointmentid = ?";
     
-    private static final String CHECK_TIMESLOT_AVAILABILITY = 
-        "SELECT COUNT(*) as count FROM appointment " +
-        "WHERE timeslotid = ? AND status != 'CANCELLED'";
-
     // Create new appointment
-    public Appointment createAppointment(Appointment appointment) {
+    public boolean createAppointment(Appointment appointment) {
         try {
             conn = DBConnection.createConnection();
+
+            pstmt = conn.prepareStatement(INSERT_APPOINTMENT);
+            pstmt.setString(1, appointment.getConcern());
+            pstmt.setInt(2, appointment.getPatientID());
+            pstmt.setInt(3, appointment.getDoctorID());
+            pstmt.setInt(4, appointment.getTimeslotID());
+            int rowsAffected = pstmt.executeUpdate();
             
-            // First check if timeslot is already booked
-            if (!isTimeslotAvailable(appointment.getTimeslotID())) {
-                conn.close();
-                return null; // Timeslot already booked
-            }
-            
-            pstmt = conn.prepareStatement(INSERT_APPOINTMENT, Statement.RETURN_GENERATED_KEYS);
-            
-            pstmt.setString(1, appointment.getStatus());
-            pstmt.setString(2, appointment.getConcern());
-            pstmt.setInt(3, appointment.getPatientID());
-            pstmt.setInt(4, appointment.getDoctorID());
-            pstmt.setInt(5, appointment.getTimeslotID());
-            
-            int affectedRows = pstmt.executeUpdate();
-            
-            if (affectedRows > 0) {
-                rs = pstmt.getGeneratedKeys();
-                if (rs.next()) {
-                    int appointmentId = rs.getInt(1);
-                    
-                    rs.close();
-                    pstmt.close();
-                    conn.close();
-                    
-                    return getAppointmentById(appointmentId);
-                }
-            }
-            
-            pstmt.close();
-            conn.close();
+            return rowsAffected > 0;
             
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
 
     // Get appointment by ID
@@ -276,29 +247,6 @@ public class AppointmentDAO {
             
             return rowsAffected > 0;
             
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Check if timeslot is available (not already booked)
-    public boolean isTimeslotAvailable(int timeslotId) {
-        try {
-            conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(CHECK_TIMESLOT_AVAILABILITY);
-            pstmt.setInt(1, timeslotId);
-            
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                int count = rs.getInt("count");
-                
-                rs.close();
-                pstmt.close();
-                conn.close();
-                
-                return count == 0;
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

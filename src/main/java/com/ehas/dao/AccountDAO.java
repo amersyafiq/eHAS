@@ -20,9 +20,9 @@ import java.sql.Statement;
  * @author SYAFIQ
  */
 public class AccountDAO {
-    private Statement statement = null;
-    private PreparedStatement pstmt = null;
-    private ResultSet rs = null;
+    private Connection conn;
+    private PreparedStatement pstmt;
+    private ResultSet rs;
     
     private static final String INSERT_ACCOUNT_SQL = 
         "INSERT INTO ACCOUNT (fullName, password, ic_passport, phoneNo, email, gender, dateOfBirth, picturePath) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";

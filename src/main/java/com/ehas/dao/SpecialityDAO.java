@@ -5,10 +5,16 @@
 package com.ehas.dao;
 
 import com.ehas.model.Patient;
+import com.ehas.model.Speciality;
+import com.ehas.util.DBConnection;
+
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
