@@ -199,9 +199,9 @@ public class appointmentBookServlet extends HttpServlet {
                 out.println("[");
 
                 String sql = "SELECT SCHEDULEID, SCHEDULEDATE " +
-                             "FROM DOCTORSCHEDULE " +
-                             "WHERE DOCTORID = ? AND ISACTIVE = TRUE " +
-                             "AND SCHEDULEDATE >= CURRENT_DATE " +
+                             "FROM DOCTORSCHEDULE D " +
+                             "WHERE DOCTORID = ? AND ISACTIVE = TRUE AND SCHEDULEDATE >= CURRENT_DATE " +
+                             "AND 0 < ( SELECT COUNT(TIMESLOTID) FROM TIMESLOT WHERE SCHEDULEID = D.SCHEDULEID AND ISAVAILABLE = TRUE )" +
                              "ORDER BY SCHEDULEDATE";
 
                 boolean first = true;
