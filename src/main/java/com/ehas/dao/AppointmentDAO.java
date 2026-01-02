@@ -11,11 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AppointmentDAO {
     private Connection conn;
@@ -32,26 +29,11 @@ public class AppointmentDAO {
         "treatmentfee, totalamount, createdat " +
         "FROM appointment WHERE appointmentid = ?";
     
-    private static final String GET_APPOINTMENTS_BY_PATIENT = 
-        "SELECT appointmentid, status, concern, patientid, doctorid, timeslotid, " +
-        "diagnosis, treatment, notes, followupappointmentid, consultationfee, " +
-        "treatmentfee, totalamount, createdat " +
-        "FROM appointment WHERE patientid = ? ORDER BY createdat DESC";
-    
-    private static final String GET_APPOINTMENTS_BY_DOCTOR = 
-        "SELECT appointmentid, status, concern, patientid, doctorid, timeslotid, " +
-        "diagnosis, treatment, notes, followupappointmentid, consultationfee, " +
-        "treatmentfee, totalamount, createdat " +
-        "FROM appointment WHERE doctorid = ? ORDER BY createdat DESC";
-    
-    private static final String GET_APPOINTMENTS_BY_STATUS = 
-        "SELECT appointmentid, status, concern, patientid, doctorid, timeslotid, " +
-        "diagnosis, treatment, notes, followupappointmentid, consultationfee, " +
-        "treatmentfee, totalamount, createdat " +
-        "FROM appointment WHERE status = ? ORDER BY createdat DESC";
-    
     private static final String UPDATE_APPOINTMENT_STATUS = 
-        "UPDATE appointment SET status = ? WHERE appointmentid = ?";
+        "UPDATE APPOINTMENT SET STATUS = ? WHERE APPOINTMENTID = ?";
+
+    private static final String UPDATE_APPOINTMENT_TIMESLOT = 
+        "UPDATE APPOINTMENT SET TIMESLOTID = ? WHERE APPOINTMENTID = ?";;
     
     private static final String UPDATE_APPOINTMENT_DETAILS = 
         "UPDATE appointment SET diagnosis = ?, treatment = ?, notes = ?, " +
@@ -104,78 +86,6 @@ public class AppointmentDAO {
         return null;
     }
 
-    // Get appointments by patient
-    public List<Appointment> getAppointmentsByPatient(int patientId) {
-        List<Appointment> appointments = new ArrayList<>();
-        try {
-            conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(GET_APPOINTMENTS_BY_PATIENT);
-            pstmt.setInt(1, patientId);
-            
-            rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                appointments.add(extractAppointment(rs));
-            }
-            
-            rs.close();
-            pstmt.close();
-            conn.close();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return appointments;
-    }
-
-    // Get appointments by doctor
-    public List<Appointment> getAppointmentsByDoctor(int doctorId) {
-        List<Appointment> appointments = new ArrayList<>();
-        try {
-            conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(GET_APPOINTMENTS_BY_DOCTOR);
-            pstmt.setInt(1, doctorId);
-            
-            rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                appointments.add(extractAppointment(rs));
-            }
-            
-            rs.close();
-            pstmt.close();
-            conn.close();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return appointments;
-    }
-
-    // Get appointments by status
-    public List<Appointment> getAppointmentsByStatus(String status) {
-        List<Appointment> appointments = new ArrayList<>();
-        try {
-            conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(GET_APPOINTMENTS_BY_STATUS);
-            pstmt.setString(1, status);
-            
-            rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                appointments.add(extractAppointment(rs));
-            }
-            
-            rs.close();
-            pstmt.close();
-            conn.close();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return appointments;
-    }
-
     // Update appointment status
     public boolean updateAppointmentStatus(int appointmentId, String status) {
         try {
@@ -190,6 +100,27 @@ public class AppointmentDAO {
             pstmt.close();
             conn.close();
             
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Update appointment timeslot
+    public boolean updateAppointmentTimeslot(int appointmentId, int timeslotID) {
+        try {
+            conn = DBConnection.createConnection();
+            pstmt = conn.prepareStatement(UPDATE_APPOINTMENT_TIMESLOT);
+            
+            pstmt.setInt(1, timeslotID);
+            pstmt.setInt(2, appointmentId);
+            int rowsAffected = pstmt.executeUpdate();
+            
+            pstmt.close();
+            conn.close();
+
             return rowsAffected > 0;
             
         } catch (SQLException e) {
@@ -264,11 +195,9 @@ public class AppointmentDAO {
         String treatment = rs.getString("treatment");
         String notes = rs.getString("notes");
         
-        // Handle nullable integer
         Integer followupAppointmentId = rs.getInt("followupappointmentid");
         if (rs.wasNull()) { followupAppointmentId = null; }
         
-        // Handle nullable doubles
         Double consultationFee = rs.getDouble("consultationfee");
         if (rs.wasNull()) { consultationFee = null; }
         

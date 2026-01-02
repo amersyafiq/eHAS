@@ -4,7 +4,6 @@
  */
 package com.ehas.dao;
 
-import com.ehas.model.Patient;
 import com.ehas.model.Speciality;
 import com.ehas.util.DBConnection;
 
@@ -12,7 +11,6 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +29,6 @@ public class SpecialityDAO {
     private static final String GET_SPECIALITY_BY_ID = 
         "SELECT specialityid, specialityname, department FROM speciality WHERE specialityid = ?";
 
-    // Get all specialities
     public List<Speciality> getAllSpecialities() {
         List<Speciality> specialities = new ArrayList<>();
         try {

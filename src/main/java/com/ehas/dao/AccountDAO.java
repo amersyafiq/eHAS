@@ -8,7 +8,6 @@ import com.ehas.model.Account;
 import com.ehas.util.passwordHash;
 
 import java.time.*;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +19,6 @@ import java.sql.Statement;
  * @author SYAFIQ
  */
 public class AccountDAO {
-    private Connection conn;
     private PreparedStatement pstmt;
     private ResultSet rs;
     

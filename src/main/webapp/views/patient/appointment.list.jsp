@@ -90,7 +90,7 @@
                                 <div class="col-md-3">
                                     <select id="statusFilter" class="form-select py-2">
                                         <option value="">All Status</option>
-                                        <option value="SENT REQUEST">Sent Request</option>
+                                        <option value="PENDING">Pending</option>
                                         <option value="CONFIRMED">Confirmed</option>
                                         <option value="COMPLETED">Completed</option>
                                         <option value="CANCELLED">Cancelled</option>

@@ -267,8 +267,7 @@
                                     <div class="row px-4 g-2">
 
                                         <c:if test="${appt.status == 'PENDING' || appt.status == 'CONFIRMED'}">
-                                        <button class="btn btn-danger col-12 d-flex flex-column align-items-center rounded-3 justify-content-center py-3 gap-2" 
-                                                onclick="cancelAppointment(${appt.appointmentid})">
+                                        <button data-appointment-id="${appt.appointmentID}" class="btn-cancel-appointment btn btn-danger col-12 d-flex flex-column align-items-center rounded-3 justify-content-center py-3 gap-2" >
                                             <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M6.8397 14.988C6.0389 14.8447 4.8587 13.5407 5.3795 13.0447L8.5806 9.99733L5.3795 6.95C4.739 6.34 6.6598 4.51267 7.3003 5.122L10.5014 8.16933L13.7025 5.122C14.343 4.512 16.2631 6.34133 15.6233 6.95L12.4222 9.99733L15.6233 13.0447C16.2638 13.6547 14.343 15.482 13.7025 14.8727L10.5014 11.8253L7.3003 14.8727C7.1792 14.9867 7.0245 15.0213 6.8404 14.988H6.8397ZM10.5 20C4.7005 20 0 15.5227 0 10C0 4.47733 4.7005 0 10.5 0C16.2995 0 21 4.47733 21 10C21 15.5227 16.2995 20 10.5 20ZM10.5 17.5C14.8491 17.5 18.375 14.142 18.375 10C18.375 5.858 14.8491 2.5 10.5 2.5C6.1509 2.5 2.625 5.858 2.625 10C2.6257 14.142 6.1509 17.5 10.5 17.5Z" fill="white"/>
                                             </svg>
@@ -318,7 +317,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="rescheduleForm">
-                        <input type="hidden" id="reschedule_appointmentId" value="${appt.appointmentid}">
+                        <input type="hidden" id="reschedule_appointmentID" value="${appt.appointmentID}">
                         <input type="hidden" id="reschedule_doctorID" value="${appt.doctorID}">
                         <input type="hidden" id="reschedule_scheduleID">
                         
@@ -337,14 +336,21 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="submitReschedule()">Confirm Reschedule</button>
+                    <button type="button" class="btn btn-primary btn-reschedule-appointment">Confirm Reschedule</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <%-- Error Toast Container --%>
-    <div id="errorToastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px;"></div>
+    <%-- Error Toast Start --%>
+    <c:if test="${not empty error}">
+    <div id="errorToastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px;">
+        <div class="bg-danger text-white px-3 py-1">
+            ${error}
+        </div>
+    </div>
+    </c:if>
+    <%-- Error Toast END --%>
     
     <%@ include file="/WEB-INF/jspf/scripts.jspf" %>
 
@@ -354,7 +360,7 @@
             var $rescheduleScheduleIDInput = $('#reschedule_scheduleID');
             var $rescheduleTimeslotSelect = $('#reschedule_timeslot');
             var $rescheduleDoctorIDInput = $('#reschedule_doctorID');
-            var $rescheduleAppointmentIdInput = $('#reschedule_appointmentId');
+            var $rescheduleAppointmentIDInput = $('#reschedule_appointmentID');
 
             var availableDates = [];
             var dateScheduleMap = {};
@@ -426,7 +432,7 @@
                         }
                     },
                     error: function() {
-                        showError('Error loading available dates');
+                        alert('Error loading available dates');
                     }
                 });
             }
@@ -444,58 +450,67 @@
                         $rescheduleTimeslotSelect.prop('disabled', false);
                     },
                     error: function() {
-                        showError('Error loading time slots');
+                        alert('Error loading time slots');
                     }
                 });
             }
 
-            function submitReschedule() {
-                var appointmentId = $rescheduleAppointmentIdInput.val();
-                var timeslotId = $rescheduleTimeslotSelect.val();
+            $(document).on('click', '.btn-reschedule-appointment', function() {
+                submitReschedule();
+            });
 
-                if (!timeslotId) {
-                    showError('Please select a date and time slot');
+            function submitReschedule() {
+                var appointmentID = $rescheduleAppointmentIDInput.val();
+                var timeslotID = $rescheduleTimeslotSelect.val();
+
+                if (!timeslotID) {
+                    alert('Please select a date and time slot');
                     return;
                 }
 
                 $.ajax({
-                    url: '${pageContext.request.contextPath}/appointment/reschedule',
-                    type: 'POST',
+                    url: '${pageContext.request.contextPath}/appointment/list/page/reschedule',
+                    type: 'GET',
                     data: {
-                        appointmentId: appointmentId,
-                        timeslotId: timeslotId
+                        appointmentID: appointmentID,
+                        timeslotID: timeslotID
                     },
                     success: function(response) {
                         if (response.success) {
                             window.location.reload();
                         } else {
-                            showError(response.message || 'Failed to reschedule appointment');
+                            alert(response.message || 'Failed to reschedule appointment');
                         }
                     },
                     error: function() {
-                        showError('Error rescheduling appointment');
+                        alert('Error rescheduling appointment');
                     }
                 });
             }
 
-            function cancelAppointment(appointmentId) {
+            $(document).on('click', '.btn-cancel-appointment', function() {
+                var appointmentID = $(this).data('appointment-id');
+                cancelAppointment(appointmentID);
+            });
+
+            function cancelAppointment(appointmentID) {
                 if (!confirm('Are you sure you want to cancel this appointment?')) {
                     return;
                 }
 
                 $.ajax({
-                    url: '${pageContext.request.contextPath}/appointment/cancel',
-                    type: 'POST',
-                    data: { appointmentId: appointmentId },
+                    url: '${pageContext.request.contextPath}/appointment/list/page/cancel',
+                    type: 'GET',
+                    data: { appointmentID: appointmentID },
                     success: function(response) {
                         if (response.success) {
                             window.location.reload();
                         } else {
-                            showError(response.message || 'Failed to cancel appointment');
+                            alert(response.message || 'Failed to cancel appointment');
                         }
                     },
                     error: function() {
-                        showError('Error cancelling appointment');
+                        alert('Error cancelling appointment');
                     }
                 });
             }
@@ -522,29 +537,6 @@
                 var month = String(date.getMonth() + 1).padStart(2, '0');
                 var day = String(date.getDate()).padStart(2, '0');
                 return year + '-' + month + '-' + day;
-            }
-
-            function showError(message) {
-                var errorId = 'error_' + Date.now();
-                var errorHtml = `
-                    <div id="${errorId}" class="alert alert-danger alert-dismissible fade show mb-2" role="alert" style="box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                        ${message}
-                        <button type="button" class="btn-close" onclick="closeError('${errorId}')"></button>
-                    </div>
-                `;
-                
-                $('#errorToastContainer').append(errorHtml);
-                
-                // Auto-remove after 5 seconds
-                setTimeout(function() {
-                    closeError(errorId);
-                }, 5000);
-            }
-
-            function closeError(errorId) {
-                $('#' + errorId).fadeOut(300, function() {
-                    $(this).remove();
-                });
             }
         });
     </script>

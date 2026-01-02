@@ -5,15 +5,12 @@
 package com.ehas.dao;
 
 import com.ehas.model.Doctor;
-import com.ehas.model.DoctorSchedule;
 import com.ehas.util.DBConnection;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
