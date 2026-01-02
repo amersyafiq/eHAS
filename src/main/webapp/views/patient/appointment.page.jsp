@@ -322,12 +322,12 @@
                         <input type="hidden" id="reschedule_scheduleID">
                         
                         <div class="mb-3">
-                            <label for="reschedule_date" class="form-label">New Date</label>
+                            <label for="reschedule_date" class="form-label text-dark"><small>New Date<small></label>
                             <input type="text" class="form-control" id="reschedule_date" placeholder="Select new date" readonly required>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="reschedule_timeslot" class="form-label">New Time Slot</label>
+                            <label for="reschedule_timeslot" class="form-label text-dark"><small>New Time Slot</small></label>
                             <select class="form-select" id="reschedule_timeslot" disabled required>
                                 <option value="">-- Select Time Slot --</option>
                             </select>
