@@ -21,104 +21,50 @@ public class DoctorScheduleDAO {
     private PreparedStatement pstmt;
     private ResultSet rs;
 
-    private static final String GET_SCHEDULES_BY_DOCTOR = 
-        "SELECT scheduleid, scheduledate, isactive, doctorid " +
-        "FROM doctorschedule " +
-        "WHERE doctorid = ? AND isactive = true AND scheduledate >= CURRENT_DATE " +
-        "ORDER BY scheduledate";
+    private static final String CHECK_SCHEDULE_DATE =
+        "SELECT COUNT(*) FROM DOCTORSCHEDULE WHERE SCHEDULEDATE = ? AND ISACTIVE = ? AND DOCTORID = ?";
     
-    private static final String GET_SCHEDULE_BY_ID = 
-        "SELECT scheduleid, scheduledate, isactive, doctorid " +
-        "FROM doctorschedule " +
-        "WHERE scheduleid = ?";
-    
-    private static final String INSERT_SCHEDULE = 
+    private static final String INSERT_SCHEDULE_DATE = 
         "INSERT INTO doctorschedule (scheduledate, isactive, doctorid) " +
         "VALUES (?, ?, ?)";
     
     private static final String UPDATE_SCHEDULE_STATUS = 
         "UPDATE doctorschedule SET isactive = ? WHERE scheduleid = ?";
 
-    // Get active schedules by doctor
-    public List<DoctorSchedule> getSchedulesByDoctor(int doctorId) {
-        List<DoctorSchedule> schedules = new ArrayList<>();
-        try {
-            conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(GET_SCHEDULES_BY_DOCTOR);
-            pstmt.setInt(1, doctorId);
-            
-            rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                schedules.add(extractDoctorSchedule(rs));
-            }
-            
-            rs.close();
-            pstmt.close();
-            conn.close();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return schedules;
-    }
-
-    // Get schedule by ID
-    public DoctorSchedule getScheduleById(int scheduleId) {
-        try {
-            conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(GET_SCHEDULE_BY_ID);
-            pstmt.setInt(1, scheduleId);
-            
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                DoctorSchedule schedule = extractDoctorSchedule(rs);
-                
-                rs.close();
-                pstmt.close();
-                conn.close();
-                
-                return schedule;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     // Create new schedule
-    public DoctorSchedule createSchedule(DoctorSchedule schedule) {
+    public boolean createSchedule(DoctorSchedule schedule) {
         try {
             conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(INSERT_SCHEDULE, Statement.RETURN_GENERATED_KEYS);
             
-            // Convert LocalDate to java.sql.Date
+            pstmt = conn.prepareStatement(CHECK_SCHEDULE_DATE);
             pstmt.setDate(1, java.sql.Date.valueOf(schedule.getScheduleDate()));
             pstmt.setBoolean(2, schedule.isActive());
-            pstmt.setInt(3, schedule.getScheduleID());
+            pstmt.setInt(3, schedule.getDoctorID());
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                if (count > 0) {
+                    return false;
+                }
+            }
+
+            pstmt = conn.prepareStatement(INSERT_SCHEDULE_DATE);
+            pstmt.setDate(1, java.sql.Date.valueOf(schedule.getScheduleDate()));
+            pstmt.setBoolean(2, schedule.isActive());
+            pstmt.setInt(3, schedule.getDoctorID());
             
             int affectedRows = pstmt.executeUpdate();
             
-            if (affectedRows > 0) {
-                rs = pstmt.getGeneratedKeys();
-                if (rs.next()) {
-                    int scheduleId = rs.getInt(1);
-                    
-                    rs.close();
-                    pstmt.close();
-                    conn.close();
-                    
-                    return getScheduleById(scheduleId);
-                }
-            }
-            
             pstmt.close();
             conn.close();
+
+            return affectedRows > 0;
             
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
 
     // Update schedule active status
@@ -142,6 +88,7 @@ public class DoctorScheduleDAO {
         }
         return false;
     }
+
 
     private DoctorSchedule extractDoctorSchedule(ResultSet rs) throws SQLException {
         int scheduleId = rs.getInt("scheduleid");

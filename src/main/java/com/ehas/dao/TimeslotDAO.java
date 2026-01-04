@@ -18,80 +18,20 @@ public class TimeslotDAO {
     private PreparedStatement pstmt;
     private ResultSet rs;
 
-    private static final String GET_AVAILABLE_TIMESLOTS_BY_SCHEDULE = 
-        "SELECT timeslotid, starttime, endtime, isavailable, scheduleid " +
-        "FROM timeslot " +
-        "WHERE scheduleid = ? AND isavailable = true " +
-        "AND timeslotid NOT IN (" +
-        "   SELECT timeslotid FROM appointment WHERE status != 'CANCELLED'" +
-        ") " +
-        "ORDER BY starttime";
-    
     private static final String GET_TIMESLOT_BY_ID = 
-        "SELECT timeslotid, starttime, endtime, isavailable, scheduleid " +
-        "FROM timeslot " +
-        "WHERE timeslotid = ?";
-    
-    private static final String GET_ALL_TIMESLOTS_BY_SCHEDULE = 
-        "SELECT timeslotid, starttime, endtime, isavailable, scheduleid " +
-        "FROM timeslot " +
-        "WHERE scheduleid = ? " +
-        "ORDER BY starttime";
+        "SELECT TIMESLOTID, STARTTIME, ENDTIME, ISAVAILABLE, SCHEDULEID " +
+        "FROM TIMESLOT " +
+        "WHERE TIMESLOTID = ?";
+
+    private static final String CHECK_TIMESLOT = 
+        "SELECT COUNT(*) FROM TIMESLOT WHERE STARTTIME = ? AND ENDTIME = ? AND ISAVAILABLE = ? AND SCHEDULEID = ? ";
     
     private static final String INSERT_TIMESLOT = 
-        "INSERT INTO timeslot (starttime, endtime, isavailable, scheduleid) " +
+        "INSERT INTO TIMESLOT (STARTTIME, ENDTIME, ISAVAILABLE, SCHEDULEID) " +
         "VALUES (?, ?, ?, ?)";
     
     private static final String UPDATE_TIMESLOT_AVAILABILITY = 
-        "UPDATE timeslot SET isavailable = ? WHERE timeslotid = ?";
-
-    // Get available timeslots by schedule (excludes booked slots)
-    public List<Timeslot> getAvailableTimeslotsBySchedule(int scheduleId) {
-        List<Timeslot> timeslots = new ArrayList<>();
-        try {
-            conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(GET_AVAILABLE_TIMESLOTS_BY_SCHEDULE);
-            pstmt.setInt(1, scheduleId);
-            
-            rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                timeslots.add(extractTimeslot(rs));
-            }
-            
-            rs.close();
-            pstmt.close();
-            conn.close();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return timeslots;
-    }
-
-    // Get all timeslots by schedule (includes unavailable)
-    public List<Timeslot> getAllTimeslotsBySchedule(int scheduleId) {
-        List<Timeslot> timeslots = new ArrayList<>();
-        try {
-            conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(GET_ALL_TIMESLOTS_BY_SCHEDULE);
-            pstmt.setInt(1, scheduleId);
-            
-            rs = pstmt.executeQuery();
-            
-            while (rs.next()) {
-                timeslots.add(extractTimeslot(rs));
-            }
-            
-            rs.close();
-            pstmt.close();
-            conn.close();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return timeslots;
-    }
+        "UPDATE TIMESLOT SET ISAVAILABLE = ? WHERE TIMESLOTID = ?";
 
     // Get timeslot by ID
     public Timeslot getTimeslotById(int timeslotId) {
@@ -117,39 +57,41 @@ public class TimeslotDAO {
     }
 
     // Create new timeslot
-    public Timeslot createTimeslot(Timeslot timeslot) {
+    public boolean createTimeslot(Timeslot timeslot) {
         try {
             conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(INSERT_TIMESLOT, Statement.RETURN_GENERATED_KEYS);
-            
-            // Convert LocalTime to java.sql.Time
+
+            pstmt = conn.prepareStatement(CHECK_TIMESLOT);
             pstmt.setTime(1, Time.valueOf(timeslot.getStartTime()));
             pstmt.setTime(2, Time.valueOf(timeslot.getEndTime()));
             pstmt.setBoolean(3, timeslot.isAvailable());
-            pstmt.setInt(4, timeslot.getTimeslotID());
+            pstmt.setInt(4, timeslot.getScheduleID());
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                if (count > 0) {
+                    return false;
+                }
+            }
+
+            pstmt = conn.prepareStatement(INSERT_TIMESLOT);
+            pstmt.setTime(1, Time.valueOf(timeslot.getStartTime()));
+            pstmt.setTime(2, Time.valueOf(timeslot.getEndTime()));
+            pstmt.setBoolean(3, timeslot.isAvailable());
+            pstmt.setInt(4, timeslot.getScheduleID());
             
             int affectedRows = pstmt.executeUpdate();
             
-            if (affectedRows > 0) {
-                rs = pstmt.getGeneratedKeys();
-                if (rs.next()) {
-                    int timeslotId = rs.getInt(1);
-                    
-                    rs.close();
-                    pstmt.close();
-                    conn.close();
-                    
-                    return getTimeslotById(timeslotId);
-                }
-            }
-            
             pstmt.close();
             conn.close();
+
+            return affectedRows > 0;
             
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
 
     // Update timeslot availability

@@ -21,7 +21,6 @@ import com.ehas.dao.AccountDAO;
 import com.ehas.dao.AppointmentDAO;
 import com.ehas.model.Account;
 import com.ehas.model.Appointment;
-import com.google.gson.Gson;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
