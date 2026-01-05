@@ -43,25 +43,16 @@ public class AuthFilter implements Filter {
         String uri = request.getRequestURI();
         String path = uri.substring(contextPath.length());
 
-        // If user already logged in and requesting root, redirect to role-specific dashboard
         HttpSession session = request.getSession(false);
-        Account account = (session == null) ? null : (Account) session.getAttribute("loggedUser");
-        if (account != null && (path.equals("/") || path.equals("/index"))) {
-            String type = account.getAccountType();
-            if ("Patient".equalsIgnoreCase(type) && !path.startsWith("/views/patient/")) {
-                request.getRequestDispatcher("/views/patient/index.jsp").forward(request, response);
-                return;
-            } else if ("Doctor".equalsIgnoreCase(type) && !path.startsWith("/views/doctor/")) {
-                request.getRequestDispatcher("/views/doctor/index.jsp").forward(request, response);
-                return;
-            }
-        }
         
         // Public Path (Static Resources, e.g.: CSS, JS, etc )
         if (
                 // Index
-                path.equals("/") ||
-                path.equals("/index") ||
+                (
+                    session == null &&
+                    (path.equals("/") ||
+                    path.equals("/index"))
+                ) ||
                 
                 // Login or Register
                 path.equals("/login") ||
@@ -71,11 +62,51 @@ public class AuthFilter implements Filter {
                 path.startsWith("/vendor/") ||
                 
                 // Partials
-                path.startsWith("/views/partials/")
+                path.endsWith(".jspf")
             ) {
             fc.doFilter(request, response);
             return;
         }
+
+        Account account = (session == null) ? null : (Account) session.getAttribute("loggedUser");
+
+        // If no user is logged in and trying to access a protected page
+        if (account == null) {
+            response.sendRedirect(contextPath + "/login");
+            return;
+        }
+
+        String type = account.getAccountType();
+
+        // Prevent Patients from accessing Doctor views
+        if (path.startsWith("/views/doctor/") && !"Doctor".equalsIgnoreCase(type)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: Doctors only.");
+            return;
+        }
+
+        // Prevent Doctors from accessing Patient views
+        if (path.startsWith("/views/patient/") && !"Patient".equalsIgnoreCase(type)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: Patients only.");
+            return;
+        }
+
+        // If logged-in user hits root or index, show dashboard WITHOUT changing the URL
+        if (path.equals("/") || path.equals("/index")) {
+            String dashboardPath = "";
+            
+            if ("Patient".equalsIgnoreCase(type)) {
+                dashboardPath = "/views/patient/index.jsp";
+            } else if ("Doctor".equalsIgnoreCase(type)) {
+                dashboardPath = "/views/doctor/index.jsp";
+            }
+
+            if (!dashboardPath.isEmpty()) {
+                request.getRequestDispatcher(dashboardPath).forward(request, response);
+                return;
+            }
+        }
+
+
         
         fc.doFilter(request, response);
     }
