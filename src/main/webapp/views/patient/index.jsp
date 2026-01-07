@@ -41,7 +41,7 @@
         SELECT 
             a.appointmentid,
             a.totalamount,
-            a.status,
+            a.billstatus,
             acc.fullname as doctor_name
         FROM appointment a
         JOIN doctor d ON a.doctorid = d.accountid
@@ -155,7 +155,7 @@
                                                             </div>
                                                             <div class="text-end">
                                                                 <c:choose>
-                                                                    <c:when test="${bill.status == 'COMPLETED' || bill.status == 'PAID'}">
+                                                                    <c:when test="${bill.billstatus == 'PAID'}">
                                                                         <p class="mb-0 fw-bold text-success">RM${bill.totalamount}</p>
                                                                         <span class="badge bg-success-subtle text-success small px-3 py-1">Paid</span>
                                                                     </c:when>

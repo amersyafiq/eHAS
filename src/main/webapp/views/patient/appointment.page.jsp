@@ -253,6 +253,17 @@
                                                         <p class="m-0 text-dark fw-lighter lh-1 mt-1">No. 8, Jalan Bukit Pantai, Taman Bukit Pantai, 59100 Kuala Lumpur</p>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-12 d-flex gap-3">
+                                                    <div style="background-color: #f3f3f3; height: fit-content;" class="rounded-2 p-3 d-flex justify-content-center align-items-center">
+                                                        <svg width="25" height="25" viewBox="0 0 132 174" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M4.40892 174C2.01833 174 0 172.016 0 169.673V4.3964C0 1.972 1.9718 0 4.40892 0H89.9466C91.0983 0 92.2383 0.4872 93.1224 1.3688L130.633 38.8426C131.506 39.5966 132 40.7218 132 41.9456V169.667C132 172.016 129.982 174 127.591 174H4.40892ZM8.82366 165.277H123.246V46.3362H89.9408C87.5037 46.3362 85.526 44.3642 85.526 41.9456V8.7232H8.82366V165.277ZM94.3555 37.613H117.04L94.3555 14.9118V37.613Z" fill="#3A57E8"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-grow-1 d-flex flex-column justify-content-start align-items-start">
+                                                        <p class="text-muted mb-1"><small>Concern</small></p>
+                                                        <p class="m-0 text-dark fw-normal lh-1">${appt.concern}</p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
