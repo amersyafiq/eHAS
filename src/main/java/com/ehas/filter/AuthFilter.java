@@ -100,7 +100,7 @@ public class AuthFilter implements Filter {
                 dashboardPath = "/views/doctor/index.jsp";
               
             }else if ("Admin".equalsIgnoreCase(type)) {
-                dashboardPath = "/views/Admin/Admin.jsp";
+                dashboardPath = "/views/Admin/index.jsp";
               
             }
            
