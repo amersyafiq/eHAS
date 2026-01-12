@@ -481,7 +481,7 @@
 
                 $.ajax({
                     url: '${pageContext.request.contextPath}/appointment/page/reschedule',
-                    type: 'GET',
+                    type: 'POST',
                     data: {
                         appointmentID: appointmentID,
                         timeslotID: timeslotID
@@ -511,7 +511,7 @@
 
                 $.ajax({
                     url: '${pageContext.request.contextPath}/appointment/page/cancel',
-                    type: 'GET',
+                    type: 'POST',
                     data: { appointmentID: appointmentID },
                     success: function(response) {
                         if (response.success) {
