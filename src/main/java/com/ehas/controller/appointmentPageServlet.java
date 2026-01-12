@@ -28,9 +28,9 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author ASUS
  */
 @WebServlet({
-    "/appointment/list/page",
-    "/appointment/list/page/cancel",
-    "/appointment/list/page/reschedule"
+    "/appointment/page",
+    "/appointment/page/cancel",
+    "/appointment/page/reschedule"
 })
 public class appointmentPageServlet extends HttpServlet {
 
@@ -60,10 +60,10 @@ public class appointmentPageServlet extends HttpServlet {
         String path = request.getServletPath();
         
         switch (path) {
-            case "/appointment/list/page/cancel":
+            case "/appointment/page/cancel":
                 handleCancel(request, response);
                 break;
-            case "/appointment/list/page/reschedule":
+            case "/appointment/page/reschedule":
                 handleReschedule(request, response);
                 break;
             default:

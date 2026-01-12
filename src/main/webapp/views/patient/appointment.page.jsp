@@ -42,7 +42,7 @@
         </sql:query>
         
         <c:if test="${appointment.rowCount == 0}">
-            <c:redirect url="${pageContext.request.contextPath}/appointment/list">
+            <c:redirect url="${pageContext.request.contextPath}/appointment">
                 <c:param name="error" value="Appointment not found" />
             </c:redirect>
         </c:if>
@@ -69,7 +69,7 @@
                                                 <a href="#">Appointments</a>
                                             </li>
                                             <li class="breadcrumb-item">
-                                                <a href="${pageContext.request.contextPath}/appointment/list">My Appointments</a>
+                                                <a href="${pageContext.request.contextPath}/appointment">My Appointments</a>
                                             </li>
                                             <li class="breadcrumb-item active" aria-current="page">${pageTitle}</li>
                                         </ol>
@@ -480,7 +480,7 @@
                 }
 
                 $.ajax({
-                    url: '${pageContext.request.contextPath}/appointment/list/page/reschedule',
+                    url: '${pageContext.request.contextPath}/appointment/page/reschedule',
                     type: 'GET',
                     data: {
                         appointmentID: appointmentID,
@@ -510,7 +510,7 @@
                 }
 
                 $.ajax({
-                    url: '${pageContext.request.contextPath}/appointment/list/page/cancel',
+                    url: '${pageContext.request.contextPath}/appointment/page/cancel',
                     type: 'GET',
                     data: { appointmentID: appointmentID },
                     success: function(response) {

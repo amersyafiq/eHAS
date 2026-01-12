@@ -97,7 +97,7 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-center mb-4">
                                                 <h5 class="mb-0 fw-semibold">Upcoming Appointments</h5>
-                                                <a href="${pageContext.request.contextPath}/appointment/list" class="text-decoration-none text-primary fw-medium small">View All Appointments</a>
+                                                <a href="${pageContext.request.contextPath}/appointment" class="text-decoration-none text-primary fw-medium small">View All Appointments</a>
                                             </div>
                                             
                                             <c:choose>
@@ -205,7 +205,7 @@
                                 
                                 <!-- My Appointments Card -->
                                 <div class="col-12 col-md-4">
-                                    <a href="${pageContext.request.contextPath}/appointment/list" class="text-decoration-none">
+                                    <a href="${pageContext.request.contextPath}/appointment" class="text-decoration-none">
                                         <div class="card border shadow-sm h-100">
                                             <div class="card-body text-center py-3 d-flex flex-column justify-content-center align-items-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-calendar-check text-secondary mb-2" viewBox="0 0 16 16">

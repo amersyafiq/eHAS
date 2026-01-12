@@ -111,7 +111,7 @@ public class appointmentBookServlet extends HttpServlet {
         appointment.setTimeslotID(timeslotID);
 
         if (appointmentDAO.createAppointment(appointment))
-            response.sendRedirect(request.getContextPath() + "/appointment/list");
+            response.sendRedirect(request.getContextPath() + "/appointment");
         else {
             RequestDispatcher view = request.getRequestDispatcher("/views/patient/appointment.book.jsp");
             view.forward(request, response);

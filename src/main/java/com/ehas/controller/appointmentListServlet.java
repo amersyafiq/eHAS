@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author ASUS
  */
-@WebServlet("/appointment/list")
+@WebServlet("/appointment")
 public class appointmentListServlet extends HttpServlet {
 
     /**
