@@ -4,9 +4,17 @@
         <servlet-name>TestS3Servlet</servlet-name>
         <servlet-class>TestS3Servlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>reportListServlet</servlet-name>
+        <servlet-class>com.ehas.controller.reportListServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>TestS3Servlet</servlet-name>
         <url-pattern>/TestS3Servlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>reportListServlet</servlet-name>
+        <url-pattern>/reportListServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
