@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 /**
  *
  * @author SYAFIQ
@@ -66,6 +67,8 @@ public class AccountDAO {
     // For account login
     public Account authenticateAccount(String email, String password, Connection conn) {
         String hashedPassword = passwordHash.doHashing(password);
+        System.out.println(email);
+        System.out.println(hashedPassword);
         try {
             pstmt = conn.prepareStatement(SELECT_ACCOUNT_SQL);
             pstmt.setString(1, email);
