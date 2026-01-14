@@ -98,10 +98,8 @@ public class AuthFilter implements Filter {
                 dashboardPath = "/views/patient/index.jsp";
             } else if ("Doctor".equalsIgnoreCase(type)) {
                 dashboardPath = "/views/doctor/index.jsp";
-              
-            }else if ("Admin".equalsIgnoreCase(type)) {
+            } else if ("Admin".equalsIgnoreCase(type)) {
                 dashboardPath = "/views/Admin/index.jsp";
-              
             }
            
 
