@@ -44,6 +44,53 @@
                         <span class="item-name">Dashboard</span>
                     </a>
                 </li>
+                        
+                        
+                        <%-- ================= ADMIN VIEW ================= --%>
+                <c:if test="${sessionScope.loggedUser.accountType eq 'Admin'}">
+
+                  
+
+                   
+
+                    <!-- Admin Invoice -->
+                    <li class="nav-item">
+                        <a class="nav-link ${pageTitle eq 'Invoice' ? 'active' : ''}"
+                           href="${pageContext.request.contextPath}/Admin/invoice">
+                            <i class="icon">
+                                <svg width="20" viewBox="0 0 24 24" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg" class="icon-20">
+                                    <path opacity="0.4"
+                                          d="M6 2h9l5 5v15H6V2Z"
+                                          fill="currentColor"/>
+                                    <path
+                                          d="M9 13h6M9 17h6M9 9h2"
+                                          stroke="#fff" stroke-width="1.5"
+                                          stroke-linecap="round"/>
+                                </svg>
+                            </i>
+                            <span class="item-name">Invoice</span>
+                        </a>
+                    </li>
+
+                    <!-- Admin Reports -->
+                    <li class="nav-item">
+                        <a class="nav-link ${pageTitle eq 'Reports' ? 'active' : ''}"
+                           href="${pageContext.request.contextPath}/Admin/report">
+                            <i class="icon">
+                                <svg width="20" viewBox="0 0 24 24" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg" class="icon-20">
+                                    <path opacity="0.4"
+                                          d="M4 22V10M10 22V2M16 22V14M22 22V6"
+                                          stroke="currentColor" stroke-width="1.5"
+                                          stroke-linecap="round"/>
+                                </svg>
+                            </i>
+                            <span class="item-name">Reports</span>
+                        </a>
+                    </li>
+
+                </c:if>
 
                 <li class="nav-item">
                     <%-- Patient View Start --%>
