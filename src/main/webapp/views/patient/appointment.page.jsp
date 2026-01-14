@@ -92,7 +92,7 @@
                                             <h5 class="card-title mb-3" style="font-size: 1.1rem;">Patient Information</h5>
                                             <div class="row px-4 g-2 mb-2">
                                                 <div class="col-md-6 d-flex gap-3">
-                                                    <img src="${appt.patient_picture}" alt="Patient Profile" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded border border-3 border-light">
+                                                    <img src="${appt.patient_picture}" alt="Patient Profile" onerror="this.onerror=null; this.src='https://placehold.co/500x500?text=No+Image';" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded border border-3 border-light">
                                                     <div class="flex-grow-1 d-flex flex-column justify-content-start align-items-start">
                                                         <p class="text-muted mb-1"><small>Full Name</small></p>
                                                         <p class="m-0 text-dark fw-normal lh-1">${appt.patient_name}</p>
@@ -234,7 +234,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 d-flex gap-3">
-                                                    <img src="${appt.doctor_picture}" alt="Doctor Profile" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded border border-3 border-light">
+                                                    <img src="${appt.doctor_picture}" alt="Doctor Profile" onerror="this.onerror=null; this.src='https://placehold.co/500x500?text=No+Image';" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded border border-3 border-light">
                                                     <div class="flex-grow-1 d-flex flex-column justify-content-start align-items-start">
                                                         <p class="text-muted mb-1"><small>Doctor Name</small></p>
                                                         <p class="m-0 text-dark fw-normal lh-1">${appt.doctor_name}</p>
@@ -278,26 +278,39 @@
                                     <div class="row px-4 g-2">
 
                                         <c:if test="${appt.status == 'PENDING' || appt.status == 'CONFIRMED'}">
-                                        <button data-appointment-id="${appt.appointmentID}" class="btn-cancel-appointment btn btn-danger col-12 d-flex flex-column align-items-center rounded-3 justify-content-center py-3 gap-2" >
-                                            <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M6.8397 14.988C6.0389 14.8447 4.8587 13.5407 5.3795 13.0447L8.5806 9.99733L5.3795 6.95C4.739 6.34 6.6598 4.51267 7.3003 5.122L10.5014 8.16933L13.7025 5.122C14.343 4.512 16.2631 6.34133 15.6233 6.95L12.4222 9.99733L15.6233 13.0447C16.2638 13.6547 14.343 15.482 13.7025 14.8727L10.5014 11.8253L7.3003 14.8727C7.1792 14.9867 7.0245 15.0213 6.8404 14.988H6.8397ZM10.5 20C4.7005 20 0 15.5227 0 10C0 4.47733 4.7005 0 10.5 0C16.2995 0 21 4.47733 21 10C21 15.5227 16.2995 20 10.5 20ZM10.5 17.5C14.8491 17.5 18.375 14.142 18.375 10C18.375 5.858 14.8491 2.5 10.5 2.5C6.1509 2.5 2.625 5.858 2.625 10C2.6257 14.142 6.1509 17.5 10.5 17.5Z" fill="white"/>
-                                            </svg>
-                                            Cancel Appointment
-                                        </button>
+                                            <form method="POST" action="${pageContext.request.contextPath}/appointment/page/cancel" class="col-12" style="margin: 0; padding: 0;">
+                                                <input type="hidden" name="appointmentID" value="${appt.appointmentid}">
+                                                <button 
+                                                    onclick="if(confirm('WARNING: Are you sure you want to CANCEL this appointment? This action cannot be undone.')) this.submit();"
+                                                    class="btn btn-danger w-100 d-flex flex-column align-items-center rounded-3 justify-content-center py-3 gap-2" >
+                                                    <svg width="25" height="25" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M6.8397 14.988C6.0389 14.8447 4.8587 13.5407 5.3795 13.0447L8.5806 9.99733L5.3795 6.95C4.739 6.34 6.6598 4.51267 7.3003 5.122L10.5014 8.16933L13.7025 5.122C14.343 4.512 16.2631 6.34133 15.6233 6.95L12.4222 9.99733L15.6233 13.0447C16.2638 13.6547 14.343 15.482 13.7025 14.8727L10.5014 11.8253L7.3003 14.8727C7.1792 14.9867 7.0245 15.0213 6.8404 14.988H6.8397ZM10.5 20C4.7005 20 0 15.5227 0 10C0 4.47733 4.7005 0 10.5 0C16.2995 0 21 4.47733 21 10C21 15.5227 16.2995 20 10.5 20ZM10.5 17.5C14.8491 17.5 18.375 14.142 18.375 10C18.375 5.858 14.8491 2.5 10.5 2.5C6.1509 2.5 2.625 5.858 2.625 10C2.6257 14.142 6.1509 17.5 10.5 17.5Z" fill="white"/>
+                                                    </svg>
+                                                    Cancel Appointment
+                                                </button>
+                                            </form>
+                                        </c:if>
+
+                                        <c:if test="${appt.status == 'PENDING' || appt.status == 'CONFIRMED'}">
                                         <button class="btn btn-primary col-12 d-flex flex-column align-items-center rounded-3 justify-content-center py-3 gap-2"
                                                 data-bs-toggle="modal" data-bs-target="#rescheduleModal">
-                                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <svg width="25" height="25" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M8.21429 0L6.57143 0.383333V1.53333H8.21429V0ZM8.21429 1.53333V3.06667H6.57143V1.53333H6.56157C4.49321 1.5548 2.98014 1.48733 1.74471 2.12213C1.127 2.44107 0.635786 2.9808 0.364714 3.65393C0.0952857 4.32553 0 5.12593 0 6.13333V18.4C0 19.4074 0.0952857 20.2063 0.364714 20.8794C0.635786 21.5525 1.127 22.0877 1.74471 22.4066C2.98179 23.0429 4.49486 22.977 6.56157 23H16.4384C18.5051 22.977 20.0166 23.0429 21.2536 22.4066C21.8937 22.0678 22.3822 21.5259 22.6304 20.8794C22.9014 20.2063 23 19.3614 23 18.4V6.13333C23 5.1244 22.9014 4.32553 22.6304 3.65393C22.3816 3.00696 21.8933 2.46425 21.2536 2.12367C20.0166 1.4858 18.5051 1.55633 16.4384 1.53333H16.4286V3.06667H14.7857V1.53333H8.21429ZM14.7857 1.53333H16.4286V0L14.7857 0.383333V1.53333ZM6.58129 7.66667H16.4286C18.4986 7.68813 19.8572 7.75867 20.4585 8.06687C20.7591 8.22327 20.9333 8.39347 21.0926 8.79213C21.2536 9.1908 21.3555 10.7333 21.3555 10.7333V18.4C21.3555 19.3077 21.2536 19.941 21.0926 20.3397C20.9333 20.7383 20.7591 20.9101 20.4585 21.0649C19.8572 21.3747 18.4969 21.4437 16.4286 21.4667H6.57143C4.50143 21.4437 3.14279 21.3747 2.53986 21.0649C2.23921 20.9101 2.06507 20.7383 1.90571 20.3397C1.74471 19.941 1.64286 19.3077 1.64286 18.4V10.7333C1.64286 9.82407 1.74471 9.1908 1.90571 8.79213C2.06507 8.39347 2.23921 8.22327 2.53986 8.06687C3.14279 7.75713 4.50471 7.68813 6.58129 7.66667Z" fill="white"/>
                                             </svg>
                                             Reschedule Appointment
                                         </button>
                                         </c:if>
+
+                                    <c:if test="${appt.status == 'PENDING' || appt.status == 'CONFIRMED'}">
                                     <div class="w-100"><hr class="border border-1 border-light"></div>
-                                    <button class="btn btn-outline-light col-12 rounded-3" 
+                                    </c:if>
+                                    
+                                    <button class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
                                             ${appt.status != 'COMPLETED' ? 'disabled' : ''}>    
                                         View Medical Report
                                     </button>
-                                    <button class="btn btn-outline-light col-12 rounded-3" 
+
+                                    <button class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
                                             ${appt.status != 'COMPLETED' ? 'disabled' : ''}>    
                                         View Invoice
                                     </button>
@@ -319,17 +332,17 @@
     </main>
 
     <%-- Reschedule Modal --%>
-    <div class="modal fade" id="rescheduleModal" tabindex="-1" aria-labelledby="rescheduleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rescheduleModalLabel">Reschedule Appointment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="rescheduleForm">
-                        <input type="hidden" id="reschedule_appointmentID" value="${appt.appointmentID}">
-                        <input type="hidden" id="reschedule_doctorID" value="${appt.doctorID}">
+    <form method="POST" action="${pageContext.request.contextPath}/appointment/page/reschedule">
+        <div class="modal fade" id="rescheduleModal" tabindex="-1" aria-labelledby="rescheduleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="rescheduleModalLabel">Reschedule Appointment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="reschedule_appointmentID" name="appointmentID" value="${appt.appointmentID}">
+                        <input type="hidden" id="reschedule_doctorID" name="doctorID" value="${appt.doctorID}">
                         <input type="hidden" id="reschedule_scheduleID">
                         
                         <div class="mb-3">
@@ -339,19 +352,25 @@
                         
                         <div class="mb-3">
                             <label for="reschedule_timeslot" class="form-label text-dark"><small>New Time Slot</small></label>
-                            <select class="form-select" id="reschedule_timeslot" disabled required>
+                            <select class="form-select" id="reschedule_timeslot" name="timeslotID" disabled required>
                                 <option value="">-- Select Time Slot --</option>
                             </select>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary btn-reschedule-appointment">Confirm Reschedule</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button 
+                            type="submit" 
+                            onclick="if(confirm('WARNING: Are you sure you want to RESCHEDULE this appointment?')) this.submit();"
+                            class="btn btn-primary btn-reschedule-appointment"
+                        >
+                            Confirm Reschedule
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 
     <%-- Error Toast Start --%>
     <c:if test="${not empty error}">
@@ -462,66 +481,6 @@
                     },
                     error: function() {
                         alert('Error loading time slots');
-                    }
-                });
-            }
-
-            $(document).on('click', '.btn-reschedule-appointment', function() {
-                submitReschedule();
-            });
-
-            function submitReschedule() {
-                var appointmentID = $rescheduleAppointmentIDInput.val();
-                var timeslotID = $rescheduleTimeslotSelect.val();
-
-                if (!timeslotID) {
-                    alert('Please select a date and time slot');
-                    return;
-                }
-
-                $.ajax({
-                    url: '${pageContext.request.contextPath}/appointment/page/reschedule',
-                    type: 'POST',
-                    data: {
-                        appointmentID: appointmentID,
-                        timeslotID: timeslotID
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            window.location.reload();
-                        } else {
-                            alert(response.message || 'Failed to reschedule appointment');
-                        }
-                    },
-                    error: function() {
-                        alert('Error rescheduling appointment');
-                    }
-                });
-            }
-
-            $(document).on('click', '.btn-cancel-appointment', function() {
-                var appointmentID = $(this).data('appointment-id');
-                cancelAppointment(appointmentID);
-            });
-
-            function cancelAppointment(appointmentID) {
-                if (!confirm('Are you sure you want to cancel this appointment?')) {
-                    return;
-                }
-
-                $.ajax({
-                    url: '${pageContext.request.contextPath}/appointment/page/cancel',
-                    type: 'POST',
-                    data: { appointmentID: appointmentID },
-                    success: function(response) {
-                        if (response.success) {
-                            window.location.reload();
-                        } else {
-                            alert(response.message || 'Failed to cancel appointment');
-                        }
-                    },
-                    error: function() {
-                        alert('Error cancelling appointment');
                     }
                 });
             }

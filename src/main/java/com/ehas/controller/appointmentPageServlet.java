@@ -31,7 +31,8 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet({
     "/appointment/page",
     "/appointment/page/cancel",
-    "/appointment/page/reschedule"
+    "/appointment/page/reschedule",
+    "/appointment/page/confirm"
 })
 public class appointmentPageServlet extends HttpServlet {
 
@@ -73,6 +74,9 @@ public class appointmentPageServlet extends HttpServlet {
             case "/appointment/page/reschedule":
                 handleReschedule(request, response);
                 break;
+            case "/appointment/page/confirm":
+                handleConfirm(request, response);
+                break;
             default:
                 response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         }
@@ -81,13 +85,10 @@ public class appointmentPageServlet extends HttpServlet {
     private void handleCancel(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        
+        int appointmentID = Integer.parseInt(request.getParameter("appointmentID"));
+        String status = "CANCELLED";
+        String errorMsg = null;
         try {
-            int appointmentID = Integer.parseInt(request.getParameter("appointmentID"));
-            String status = "CANCELLED";
 
             String sql = "SELECT D.SCHEDULEDATE, T.STARTTIME " +
                          "FROM APPOINTMENT A " +
@@ -96,7 +97,7 @@ public class appointmentPageServlet extends HttpServlet {
                          "WHERE A.APPOINTMENTID = ?";
 
             try (Connection conn = DBConnection.createConnection();
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 
                 pstmt.setInt(1, appointmentID);
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -119,37 +120,67 @@ public class appointmentPageServlet extends HttpServlet {
 
                         if (canCancel) {
                             appointmentDAO.updateAppointmentStatus(appointmentID, status);
-                            out.print("{\"success\": true, \"message\": \"Appointment cancelled successfully.\"}");
+                            response.sendRedirect(request.getContextPath() + "/appointment/page?id=" + appointmentID);
+                            return;  
                         } else {
-                            out.print("{\"success\": false, \"message\": \"Cannot cancel within 2 hours of the appointment.\"}");
+                            throw new Exception("You can't to cancel an appointment within 2 hours before it start.");
                         }
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            out.print("{\"success\": false, \"message\": \"Error processing cancellation.\"}");
+            errorMsg = e.getMessage();
         }
+
+        request.setAttribute("error", errorMsg);
+        request.getRequestDispatcher("/views/patient/appointment.page.jsp").forward(request, response);
     }
 
     private void handleReschedule(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        
+        int appointmentID = Integer.parseInt(request.getParameter("appointmentID"));
+        int newTimeslotID = Integer.parseInt(request.getParameter("timeslotID"));
+        String errorMsg = null;
         try {
-            int appointmentID = Integer.parseInt(request.getParameter("appointmentID"));
-            int newTimeslotID = Integer.parseInt(request.getParameter("timeslotID"));
-
             if (appointmentDAO.updateAppointmentTimeslot(appointmentID, newTimeslotID)) {
-                out.print("{\"success\": true, \"message\": \"Appointment rescheduled successfully.\"}");
+                response.sendRedirect(request.getContextPath() + "/appointment/page?id=" + appointmentID);
+                return;  
             } else {
-                out.print("{\"success\": false, \"message\": \"Failed to reschedule appointment.\"}");
+                throw new Exception("You are unable to reschedule this appointment.");
             }
-        } catch (NumberFormatException e) {
-            out.print("{\"success\": false, \"message\": \"Invalid parameters.\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorMsg = e.getMessage();
         }
+
+        request.setAttribute("error", errorMsg);
+        request.getRequestDispatcher("/views/patient/appointment.page.jsp").forward(request, response);
     }
+
+    private void handleConfirm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        int appointmentID = Integer.parseInt(request.getParameter("appointmentID"));
+        String status = "CONFIRMED";
+        String errorMsg = null;
+        try {
+
+            if (appointmentDAO.updateAppointmentStatus(appointmentID, status)) {
+                response.sendRedirect(request.getContextPath() + "/appointment/page?id=" + appointmentID);
+                return;  
+            } else {
+                throw new Exception("You are unable to confirm this appointment.");
+            }
+    
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorMsg = e.getMessage();
+        }
+
+        request.setAttribute("error", errorMsg);
+        request.getRequestDispatcher("/views/patient/appointment.page.jsp").forward(request, response);
+    }
+
 }

@@ -20,8 +20,8 @@ public class AppointmentDAO {
     private ResultSet rs;
 
     private static final String INSERT_APPOINTMENT = 
-        "INSERT INTO APPOINTMENT (CONCERN, PATIENTID, DOCTORID, TIMESLOTID) " +
-        "VALUES (?, ?, ?, ?)";
+        "INSERT INTO APPOINTMENT (CONCERN, PATIENTID, DOCTORID, TIMESLOTID, FOLLOWUPAPPOINTMENTID) " +
+        "VALUES (?, ?, ?, ?, ?)";
     
     private static final String GET_APPOINTMENT_BY_ID = 
         "SELECT appointmentid, status, concern, patientid, doctorid, timeslotid, " +
@@ -35,13 +35,12 @@ public class AppointmentDAO {
     private static final String UPDATE_APPOINTMENT_TIMESLOT = 
         "UPDATE APPOINTMENT SET TIMESLOTID = ? WHERE APPOINTMENTID = ?";;
     
-    private static final String UPDATE_APPOINTMENT_DETAILS = 
-        "UPDATE appointment SET diagnosis = ?, treatment = ?, notes = ?, " +
-        "consultationfee = ?, treatmentfee = ?, totalamount = ? " +
-        "WHERE appointmentid = ?";
+    private static final String UPDATE_APPOINTMENT_CONSULTATION = 
+        "UPDATE APPOINTMENT SET DIAGNOSIS = ?, TREATMENT = ?, NOTES = ?, STATUS = ? " +
+        "WHERE APPOINTMENTID = ?";
     
     private static final String UPDATE_APPOINTMENT_FOLLOWUP = 
-        "UPDATE appointment SET followupappointmentid = ? WHERE appointmentid = ?";
+        "UPDATE APPOINTMENT SET FOLLOWUPAPPOINTMENTID = ? WHERE APPOINTMENTID = ?";
     
     // Create new appointment
     public boolean createAppointment(Appointment appointment) {
@@ -53,6 +52,11 @@ public class AppointmentDAO {
             pstmt.setInt(2, appointment.getPatientID());
             pstmt.setInt(3, appointment.getDoctorID());
             pstmt.setInt(4, appointment.getTimeslotID());
+            if (appointment.getFollowUpAppointmentID() > 0) {
+                pstmt.setInt(5, appointment.getFollowUpAppointmentID());
+            } else {
+                pstmt.setNull(5, java.sql.Types.INTEGER);
+            }
             int rowsAffected = pstmt.executeUpdate();
             
             return rowsAffected > 0;
@@ -129,21 +133,17 @@ public class AppointmentDAO {
         return false;
     }
 
-    // Update appointment details (diagnosis, treatment, etc.)
-    public boolean updateAppointmentDetails(int appointmentId, String diagnosis, 
-            String treatment, String notes, Double consultationFee, 
-            Double treatmentFee, Double totalAmount) {
+    // Update appointment consultation
+    public boolean updateAppointmentConsultation(Appointment appointment) {
         try {
             conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(UPDATE_APPOINTMENT_DETAILS);
+            pstmt = conn.prepareStatement(UPDATE_APPOINTMENT_CONSULTATION);
             
-            pstmt.setString(1, diagnosis);
-            pstmt.setString(2, treatment);
-            pstmt.setString(3, notes);
-            pstmt.setDouble(4, consultationFee != null ? consultationFee : 0.0);
-            pstmt.setDouble(5, treatmentFee != null ? treatmentFee : 0.0);
-            pstmt.setDouble(6, totalAmount != null ? totalAmount : 0.0);
-            pstmt.setInt(7, appointmentId);
+            pstmt.setString(1, appointment.getDiagnosis());
+            pstmt.setString(2, appointment.getTreatment());
+            pstmt.setString(3, appointment.getNotes());
+            pstmt.setString(4, appointment.getStatus());
+            pstmt.setInt(5, appointment.getAppointmentID());
             
             int rowsAffected = pstmt.executeUpdate();
             

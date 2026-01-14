@@ -30,7 +30,7 @@
                             <h6 class="mb-0 caption-title text-end">${sessionScope.loggedUser.fullName}</h6>
                             <p class="mb-0 caption-sub-title text-end">${sessionScope.loggedUser.accountType}</p>
                         </div>
-                        <img src="${sessionScope.loggedUser.picturePath}" alt="User-Profile" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded">
+                        <img src="${sessionScope.loggedUser.picturePath}" onerror="this.onerror=null; this.src='https://placehold.co/500x500?text=No+Image';" alt="User-Profile" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">Profile</a></li>

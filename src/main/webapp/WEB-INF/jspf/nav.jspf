@@ -48,7 +48,7 @@
                 <li class="nav-item">
                     <%-- Patient View Start --%>
                     <c:if test="${sessionScope.loggedUser.accountType eq 'Patient'}">
-                        <c:set var="isApptActive" value="${pageTitle eq 'Book Appointment' or pageTitle eq 'My Appointments'}" />
+                        <c:set var="isApptActive" value="${pageTitle eq 'Book Appointment' or pageTitle eq 'My Appointments' or pageTitle eq 'Appointment Page'}" />
                         
                         <a class="nav-link ${isApptActive ? 'active' : 'collapsed'}"
                            data-bs-toggle="collapse" 
@@ -85,7 +85,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link ${pageTitle eq 'My Appointments' ? 'active' : ''}"
+                                <a class="nav-link ${pageTitle eq 'My Appointments' or pageTitle eq 'Appointment Page' ? 'active' : ''}"
                                    href="${pageContext.request.contextPath}/appointment">
                                     <i class="icon">
                                         <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
