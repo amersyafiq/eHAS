@@ -46,17 +46,12 @@
                 </li>
                         
                         
-                        <%-- ================= ADMIN VIEW ================= --%>
+                <%-- ================= ADMIN VIEW ================= --%>
                 <c:if test="${sessionScope.loggedUser.accountType eq 'Admin'}">
-
-                  
-
-                   
-
                     <!-- Admin Invoice -->
                     <li class="nav-item">
                         <a class="nav-link ${pageTitle eq 'Invoice' ? 'active' : ''}"
-                           href="${pageContext.request.contextPath}/Admin/invoice">
+                           href="${pageContext.request.contextPath}/invoice">
                             <i class="icon">
                                 <svg width="20" viewBox="0 0 24 24" fill="none"
                                      xmlns="http://www.w3.org/2000/svg" class="icon-20">
@@ -76,7 +71,7 @@
                     <!-- Admin Reports -->
                     <li class="nav-item">
                         <a class="nav-link ${pageTitle eq 'Reports' ? 'active' : ''}"
-                           href="${pageContext.request.contextPath}/Admin/report">
+                           href="${pageContext.request.contextPath}/report">
                             <i class="icon">
                                 <svg width="20" viewBox="0 0 24 24" fill="none"
                                      xmlns="http://www.w3.org/2000/svg" class="icon-20">
@@ -89,13 +84,12 @@
                             <span class="item-name">Reports</span>
                         </a>
                     </li>
-
                 </c:if>
 
                 <li class="nav-item">
                     <%-- Patient View Start --%>
                     <c:if test="${sessionScope.loggedUser.accountType eq 'Patient'}">
-                        <c:set var="isApptActive" value="${pageTitle eq 'Book Appointment' or pageTitle eq 'My Appointments' or pageTitle eq 'Appointment Page'}" />
+                        <c:set var="isApptActive" value="${pageTitle eq 'Book Appointment' or pageTitle eq 'My Appointments' or pageTitle eq 'Appointment Page' or pageTitle eq 'Medical Report'}" />
                         
                         <a class="nav-link ${isApptActive ? 'active' : 'collapsed'}"
                            data-bs-toggle="collapse" 
@@ -132,7 +126,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link ${pageTitle eq 'My Appointments' or pageTitle eq 'Appointment Page' ? 'active' : ''}"
+                                <a class="nav-link ${pageTitle eq 'My Appointments' or pageTitle eq 'Appointment Page' or pageTitle eq 'Medical Report' ? 'active' : ''}"
                                    href="${pageContext.request.contextPath}/appointment">
                                     <i class="icon">
                                         <svg class="icon-10" xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24" fill="currentColor">
@@ -158,7 +152,7 @@
                             </i>
                             <span class="item-name">My Schedule</span>
                         </a>
-                        <a class="nav-link ${pageTitle eq 'My Appointments' ? 'active' : ''}" 
+                        <a class="nav-link ${pageTitle eq 'My Appointments' or pageTitle eq 'Appointment Page' or pageTitle eq 'Consultation' ? 'active' : ''}" 
                            href="${pageContext.request.contextPath}/appointment">
                             <i class="icon">
                                 <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-20">
@@ -169,6 +163,7 @@
                             <span class="item-name">Appointments</span>
                         </a>
                     </c:if>
+                    
                 </li>
             </ul>
         </div>

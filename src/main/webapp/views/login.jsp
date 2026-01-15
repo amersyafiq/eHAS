@@ -46,7 +46,7 @@
                                         
                                         <%-- Login Form Start --%>
                                         <form action="${pageContext.request.contextPath}/login" method="POST"  class="row g-3 needs-validation" novalidate>
-                                            <div class="row">
+                                            <div class="row w-100">
                                                 <div class="col-lg-12">
                                                     <div class="form-group">
                                                         <label for="email" class="form-label">Email</label>

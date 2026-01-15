@@ -109,10 +109,12 @@ public class appointmentBookServlet extends HttpServlet {
         appointment.setPatientID(patientID);
         appointment.setDoctorID(doctorID);
         appointment.setTimeslotID(timeslotID);
+        appointment.setFollowUpAppointmentID(0);
 
         if (appointmentDAO.createAppointment(appointment))
             response.sendRedirect(request.getContextPath() + "/appointment");
         else {
+            request.setAttribute("error", "Failed to book the appointment. Please try again");
             RequestDispatcher view = request.getRequestDispatcher("/views/patient/appointment.book.jsp");
             view.forward(request, response);
         }

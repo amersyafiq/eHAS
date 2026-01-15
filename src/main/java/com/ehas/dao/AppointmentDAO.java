@@ -38,9 +38,11 @@ public class AppointmentDAO {
     private static final String UPDATE_APPOINTMENT_CONSULTATION = 
         "UPDATE APPOINTMENT SET DIAGNOSIS = ?, TREATMENT = ?, NOTES = ?, STATUS = ? " +
         "WHERE APPOINTMENTID = ?";
+
+    private static final String UPDATE_APPOINTMENT_FEE = 
+        "UPDATE APPOINTMENT SET CONSULTATIONFEE = ?, TREATMENTFEE = ?, TOTALAMOUNT = ? " +
+        "WHERE APPOINTMENTID = ?";
     
-    private static final String UPDATE_APPOINTMENT_FOLLOWUP = 
-        "UPDATE APPOINTMENT SET FOLLOWUPAPPOINTMENTID = ? WHERE APPOINTMENTID = ?";
     
     // Create new appointment
     public boolean createAppointment(Appointment appointment) {
@@ -158,18 +160,15 @@ public class AppointmentDAO {
         return false;
     }
 
-    // Update follow-up appointment
-    public boolean updateFollowupAppointment(int appointmentId, Integer followupAppointmentId) {
+    public boolean updateAppointmentFee(Appointment appointment) {
         try {
             conn = DBConnection.createConnection();
-            pstmt = conn.prepareStatement(UPDATE_APPOINTMENT_FOLLOWUP);
+            pstmt = conn.prepareStatement(UPDATE_APPOINTMENT_FEE);
             
-            if (followupAppointmentId != null) {
-                pstmt.setInt(1, followupAppointmentId);
-            } else {
-                pstmt.setNull(1, Types.INTEGER);
-            }
-            pstmt.setInt(2, appointmentId);
+            pstmt.setDouble(1, appointment.getConsultationFee());
+            pstmt.setDouble(2, appointment.getTreatmentFee());
+            pstmt.setDouble(3, appointment.getTotalAmount());
+            pstmt.setInt(4, appointment.getAppointmentID());
             
             int rowsAffected = pstmt.executeUpdate();
             

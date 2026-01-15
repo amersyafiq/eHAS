@@ -11,7 +11,7 @@
 <html lang="en" dir="ltr" data-bs-theme="light" data-bs-theme-color="theme-color-default">
 
     <%@ include file="/WEB-INF/jspf/head.jspf" %>
-    <c:set var="pageTitle" value="Conduct Consultation" />
+    <c:set var="pageTitle" value="Consultation" />
 
     <body class="uikit" data-bs-spy="scroll" data-bs-target="#elements-section" data-bs-offset="0" tabindex="0">
         <div id="loading">
@@ -222,6 +222,17 @@
         
             <%@ include file="/WEB-INF/jspf/footer.jspf" %>
         </main>
+
+        <%-- Error Toast Start --%>
+        <c:if test="${not empty error or not empty param.error}">
+            <div class="alert alert-danger alert-dismissible fade show rounded-4" role="alert" 
+                style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px;">
+                <strong>Error!</strong> 
+                ${not empty error ? error : param.error}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+        <%-- Error Toast END --%>
         
         <%@ include file="/WEB-INF/jspf/scripts.jspf" %>
 

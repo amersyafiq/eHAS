@@ -109,6 +109,17 @@
 
         </main>
 
+        <%-- Error Toast Start --%>
+        <c:if test="${not empty error or not empty param.error}">
+            <div class="alert alert-danger alert-dismissible fade show rounded-4" role="alert" 
+                style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px;">
+                <strong>Error!</strong> 
+                ${not empty error ? error : param.error}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+        <%-- Error Toast END --%>
+
         <%-- Timeslot Modal --%>
         <div class="modal fade" id="timeslotModal" tabindex="-1" aria-labelledby="timeslotModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

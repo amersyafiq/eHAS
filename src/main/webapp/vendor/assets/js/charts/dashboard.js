@@ -113,6 +113,7 @@ if (document.querySelectorAll('#d-activity').length) {
     chart.updateOptions(newOpt)
     })
   }
+  
 if (document.querySelectorAll('#d-main').length) {
   const options = {
       series: [{

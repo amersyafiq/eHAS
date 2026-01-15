@@ -319,7 +319,7 @@
                                     <c:if test="${appt.status == 'PENDING' || appt.status == 'CONFIRMED'}">
                                     <div class="w-100"><hr class="border border-1 border-light"></div>
                                     </c:if>
-                                    
+
                                     <button class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
                                             ${appt.status != 'COMPLETED' ? 'disabled' : ''}>    
                                         View Medical Report
@@ -348,10 +348,9 @@
 
     <%-- Error Toast Start --%>
     <c:if test="${not empty error}">
-    <div id="errorToastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px;">
-        <div class="bg-danger text-white px-3 py-1">
-            ${error}
-        </div>
+    <div class="alert alert-danger alert-dismissible fade show rounded-4" role="alert" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px;">
+        <strong>Error!</strong> ${error}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     </c:if>
     <%-- Error Toast END --%>

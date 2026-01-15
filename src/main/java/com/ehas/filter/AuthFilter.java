@@ -99,9 +99,8 @@ public class AuthFilter implements Filter {
             } else if ("Doctor".equalsIgnoreCase(type)) {
                 dashboardPath = "/views/doctor/index.jsp";
             } else if ("Admin".equalsIgnoreCase(type)) {
-                dashboardPath = "/views/Admin/index.jsp";
+                dashboardPath = "/views/admin/index.jsp";
             }
-           
 
             if (!dashboardPath.isEmpty()) {
                 request.getRequestDispatcher(dashboardPath).forward(request, response);
