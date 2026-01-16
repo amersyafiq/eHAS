@@ -68,8 +68,7 @@
                                     </nav>
                                 </div>
                                 <div class="col-auto">
-                                    <button onclick="window.print()" class="btn btn-sm btn-primary me-2">Print Invoice</button>
-                                    <button onclick="window.location.href='${pageContext.request.contextPath}/'" class="btn btn-sm btn-secondary">Home</button>
+                                    <button onclick="window.location.href='${pageContext.request.contextPath}/'" class="btn btn-sm btn-primary">Home</button>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +76,7 @@
 
                     <div class="row">
                         <!-- Invoice Document -->
-                        <div class="col-lg-8 pe-md-2">
+                        <div class="col-lg-8 pe-md-2" id="invoice">
                             <div class="card shadow-sm">
                                 <div class="card-body p-5">
                                     
@@ -186,6 +185,7 @@
                         <div class="col-lg-4 ps-md-2">
                             <div class="card shadow-sm">
                                 <div class="card-body">
+                                    <button class="btn col-12 rounded-3 btn-primary mb-3" onclick="downloadAsPDF()"> Download as PDF </button>
                                     <h5 class="card-title mb-4">Payment</h5>
                                     
                                     <!-- Amount Summary -->
@@ -228,7 +228,6 @@
                                         <p class="text-muted small mb-1">
                                             <i class="fas fa-lock text-success"></i> Secure Payment
                                         </p>
-                                        <p class="text-muted small">Powered by Stripe</p>
                                     </div>
                                 </div>
                             </div>
@@ -287,6 +286,8 @@
 
         <!-- Stripe.js -->
         <script src="https://js.stripe.com/v3/"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
         <script>
         $(document).ready(function() {
@@ -386,6 +387,57 @@
                 });
             });
         });
+
+        async function downloadAsPDF() {
+            const { jsPDF } = window.jspdf;
+            const element = document.querySelector('#invoice');  // ← your main report card
+
+            const canvas = await html2canvas(element, {
+                scale: 2,               // higher = sharper text (but bigger file)
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'   // avoid transparent → white edges
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // ── Key part: get real PDF page width ──
+            const pdfWidth = pdf.internal.pageSize.getWidth();     // ≈ 210 mm for A4
+            const pdfHeight = pdf.internal.pageSize.getHeight();   // ≈ 297 mm
+
+            // Get original image dimensions (in pixels)
+            const imgProps = pdf.getImageProperties(imgData);
+            const imgWidthPx  = imgProps.width;
+            const imgHeightPx = imgProps.height;
+
+            // Scale so width fills the full page (no right margin/empty space)
+            const ratio = pdfWidth / imgWidthPx;
+            const finalImgWidth  = pdfWidth;
+            const finalImgHeight = imgHeightPx * ratio;
+
+            // If content is very long → add pages automatically
+            let heightLeft = finalImgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, finalImgWidth, finalImgHeight);
+
+            heightLeft -= pdfHeight;
+
+            while (heightLeft > 0) {
+                position = heightLeft - finalImgHeight;  // negative = continue from previous cut
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, finalImgWidth, finalImgHeight);
+                heightLeft -= pdfHeight;
+            }
+
+            pdf.save(`Invoice-\${${invoice.appointmentid}}.pdf`);
+        }
         </script>
 
         <style>
