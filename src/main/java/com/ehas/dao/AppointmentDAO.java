@@ -42,6 +42,10 @@ public class AppointmentDAO {
     private static final String UPDATE_APPOINTMENT_FEE = 
         "UPDATE APPOINTMENT SET CONSULTATIONFEE = ?, TREATMENTFEE = ?, TOTALAMOUNT = ? " +
         "WHERE APPOINTMENTID = ?";
+
+    private static final String UPDATE_APPOINTMENT_BILLSTATUS = 
+        "UPDATE APPOINTMENT SET BILLSTATUS = 'PAID' " +
+        "WHERE APPOINTMENTID = ?";
     
     
     // Create new appointment
@@ -169,6 +173,26 @@ public class AppointmentDAO {
             pstmt.setDouble(2, appointment.getTreatmentFee());
             pstmt.setDouble(3, appointment.getTotalAmount());
             pstmt.setInt(4, appointment.getAppointmentID());
+            
+            int rowsAffected = pstmt.executeUpdate();
+            
+            pstmt.close();
+            conn.close();
+            
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateAppointmentBillStatus(int appointmentID) {
+        try {
+            conn = DBConnection.createConnection();
+            pstmt = conn.prepareStatement(UPDATE_APPOINTMENT_BILLSTATUS);
+            
+            pstmt.setInt(1, appointmentID);
             
             int rowsAffected = pstmt.executeUpdate();
             

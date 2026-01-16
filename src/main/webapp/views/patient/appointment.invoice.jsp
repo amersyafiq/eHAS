@@ -217,7 +217,7 @@
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#stripePaymentModal"
                                                 data-amount="${invoice.totalamount}"
-                                                data-invoiceid="${invoice.appointmentid}"
+                                                data-appointmentid="${invoice.appointmentid}"
                                                 data-patientemail="${invoice.patient_email}">
                                             <i class="fas fa-credit-card me-2"></i> Pay Now with Card
                                         </button>
@@ -252,25 +252,25 @@
                     </div>
                     <form id="stripePaymentForm">
                         <div class="modal-body">
-                            <input type="hidden" id="invoiceId" name="invoiceId">
+                            <input type="hidden" id="appointmentID" name="appointmentID">
                             <input type="hidden" id="amount" name="amount">
                             <input type="hidden" id="patientEmail" name="patientEmail">
                             
                             <div class="mb-3">
-                                <label class="form-label"><strong>Amount to Pay</strong></label>
-                                <div class="p-3 bg-light rounded">
+                                <label class="form-label text-dark fw-normal">Amount to Pay</label>
+                                <div class="p-3 bg-primary-subtle border border-1 border-primary rounded">
                                     <h5 class="fw-bold text-primary mb-0">RM <span id="displayAmount">0.00</span></h5>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="cardElement" class="form-label">Card Details</label>
+                                <label for="cardElement" class="form-label text-dark fw-normal">Card Details</label>
                                 <div id="cardElement" class="form-control" style="height: 40px; padding-top: 10px;"></div>
                                 <div id="cardErrors" class="text-danger mt-2 small"></div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="cardholderName" class="form-label">Cardholder Name</label>
+                                <label for="cardholderName" class="form-label text-dark fw-normal">Cardholder Name</label>
                                 <input type="text" class="form-control" id="cardholderName" placeholder="John Doe" required>
                             </div>
                         </div>
@@ -291,7 +291,7 @@
         <script>
         $(document).ready(function() {
             // Initialize Stripe
-            const stripe = Stripe('pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE'); // Replace with your test key
+            const stripe = Stripe('pk_test_51Spq9kRVXUoMhoEv86JH3vE06XY69W57qI50wdYcaEFXRxAibsArHKRh4MBNJumGv3eVoHNJwxetwxNIyTrJ2sbL007Bz45idL'); // Replace with your test key
             const elements = stripe.elements();
             const cardElement = elements.create('card');
             cardElement.mount('#cardElement');
@@ -309,12 +309,12 @@
             // Modal population
             $('#stripePaymentModal').on('show.bs.modal', function(e) {
                 const button = e.relatedTarget;
-                const amount = $(button).data('amount');
-                const invoiceId = $(button).data('invoiceid');
+                const amount = Number($(button).data('amount'));
+                const appointmentID = $(button).data('appointmentid');
                 const patientEmail = $(button).data('patientemail');
                 
-                $('#invoiceId').val(invoiceId);
-                $('#amount').val(Math.round(amount * 100)); // Convert to cents
+                $('#appointmentID').val(appointmentID);
+                $('#amount').val(Math.round(amount * 100));
                 $('#patientEmail').val(patientEmail);
                 $('#displayAmount').text(amount.toFixed(2));
             });
@@ -346,15 +346,15 @@
                     } else {
                         // Send payment method ID to server
                         $.ajax({
-                            url: '${pageContext.request.contextPath}/appointment/process-payment',
+                            url: '${pageContext.request.contextPath}/appointment/invoice/process-payment',
                             type: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({
-                                invoiceId: $('#invoiceId').val(),
-                                paymentMethodId: result.paymentMethod.id,
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            data: {
+                                appointmentID: $('#appointmentID').val(),
+                                paymentMethodID: result.paymentMethod.id,
                                 amount: $('#amount').val(),
                                 cardholderName: cardholderName
-                            }),
+                            },
                             success: function(response) {
                                 if (response.success) {
                                     alert('Payment successful!');
