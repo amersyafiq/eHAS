@@ -62,7 +62,10 @@ public class AuthFilter implements Filter {
                 path.startsWith("/vendor/") ||
                 
                 // Partials
-                path.endsWith(".jspf")
+                path.endsWith(".jspf") ||
+
+                // Test S3
+                path.equals("/test-s3")
             ) {
             fc.doFilter(request, response);
             return;
@@ -98,6 +101,8 @@ public class AuthFilter implements Filter {
                 dashboardPath = "/views/patient/index.jsp";
             } else if ("Doctor".equalsIgnoreCase(type)) {
                 dashboardPath = "/views/doctor/index.jsp";
+            } else if ("Admin".equalsIgnoreCase(type)) {
+                dashboardPath = "/views/admin/index.jsp";
             }
 
             if (!dashboardPath.isEmpty()) {

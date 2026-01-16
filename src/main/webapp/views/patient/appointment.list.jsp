@@ -85,7 +85,7 @@
                         <div class="col-md-10">
                             <div class="row g-3">
                                 <div class="col-md-9">
-                                    <input  id="searchInput" type="text" style="font-size: 0.875rem;" class="form-control py-2 px-5" placeholder="Search Appointment">
+                                    <input  id="searchInput" type="text" style="font-size: 0.875rem;" class="form-control py-2 px-5 h-100" placeholder="Search Appointment">
                                 </div>
                                 <div class="col-md-3">
                                     <select id="statusFilter" class="form-select py-2">
@@ -152,7 +152,7 @@
                                     <c:forEach var="result" items="${results.rows}">
                                         <div 
                                             role="button"
-                                            onclick="javascript:location.href='${pageContext.request.contextPath}/appointment/list/page?id=${result.appointmentID}'"
+                                            onclick="javascript:location.href='${pageContext.request.contextPath}/appointment/page?id=${result.appointmentID}'"
                                             class="col-md-4 appointment-card card-anim mt-0"
                                             data-status="${result.STATUS}"
                                             data-doctor="${fn:toLowerCase(result.FULLNAME)}"
@@ -229,6 +229,17 @@
             <%@ include file="/WEB-INF/jspf/footer.jspf" %>
             <!-- Footer Section END -->
         </main>
+
+        <%-- Error Toast Start --%>
+        <c:if test="${not empty error or not empty param.error}">
+            <div class="alert alert-danger alert-dismissible fade show rounded-4" role="alert" 
+                style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px;">
+                <strong>Error!</strong> 
+                ${not empty error ? error : param.error}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+        <%-- Error Toast END --%>
         
         <%@ include file="/WEB-INF/jspf/scripts.jspf" %>
         

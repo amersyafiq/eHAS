@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author ASUS
  */
-@WebServlet("/appointment/list")
+@WebServlet("/appointment")
 public class appointmentListServlet extends HttpServlet {
 
     /**
@@ -35,8 +35,19 @@ public class appointmentListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        RequestDispatcher view = request.getRequestDispatcher("/views/patient/appointment.list.jsp");
-        view.forward(request, response);
+        
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Account account = (Account) session.getAttribute("loggedUser");
+            String accountType = account.getAccountType();
+            if ("patient".equalsIgnoreCase(accountType)) {
+                request.getRequestDispatcher("/views/patient/appointment.list.jsp").forward(request, response);
+                return;
+            } else if ("doctor".equalsIgnoreCase(accountType)) {
+                request.getRequestDispatcher("/views/doctor/appointment.list.jsp").forward(request, response);
+                return;
+            }
+        }
     }
 
     /**

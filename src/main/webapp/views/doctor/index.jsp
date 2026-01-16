@@ -119,7 +119,7 @@
                                                         <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                                                     </svg>
                                                 </div>
-                                                <h2 class="fw-bold text-primary mb-1">${stat.today_count}</h2>
+                                                <h2 class="fw-bold text-primary mb-1 counter">${stat.today_count}</h2>
                                                 <p class="mb-0 text-muted small">Today's Appointments</p>
                                             </div>
                                         </div>
@@ -135,7 +135,7 @@
                                                         <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                                                     </svg>
                                                 </div>
-                                                <h2 class="fw-bold text-success mb-1">${stat.week_count}</h2>
+                                                <h2 class="fw-bold text-success mb-1 counter">${stat.week_count}</h2>
                                                 <p class="mb-0 text-muted small">This Week</p>
                                             </div>
                                         </div>
@@ -151,7 +151,7 @@
                                                         <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
                                                     </svg>
                                                 </div>
-                                                <h2 class="fw-bold text-info mb-1">${stat.month_completed}</h2>
+                                                <h2 class="fw-bold text-info mb-1 counter">${stat.month_completed}</h2>
                                                 <p class="mb-0 text-muted small">Completed This Month</p>
                                             </div>
                                         </div>
@@ -169,7 +169,7 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-center mb-4">
                                                 <h5 class="mb-0 fw-semibold">Today's Appointments</h5>
-                                                <a href="${pageContext.request.contextPath}/appointment/list" class="text-decoration-none text-primary fw-medium small">View All Appointments</a>
+                                                <a href="${pageContext.request.contextPath}/appointment" class="text-decoration-none text-primary fw-medium small">View All Appointments</a>
                                             </div>
                                             
                                             <c:choose>
@@ -269,7 +269,7 @@
                                 
                                 <!-- View Appointments Card -->
                                 <div class="col-12 col-md-4">
-                                    <a href="${pageContext.request.contextPath}/appointment/list" class="text-decoration-none">
+                                    <a href="${pageContext.request.contextPath}/appointment" class="text-decoration-none">
                                         <div class="card border shadow-sm h-100">
                                             <div class="card-body text-center py-3 d-flex flex-column justify-content-center align-items-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-calendar-check text-secondary mb-2" viewBox="0 0 16 16">
