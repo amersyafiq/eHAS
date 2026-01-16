@@ -62,7 +62,10 @@ public class AuthFilter implements Filter {
                 path.startsWith("/vendor/") ||
                 
                 // Partials
-                path.endsWith(".jspf")
+                path.endsWith(".jspf") ||
+
+                // Test S3
+                path.equals("/test-s3")
             ) {
             fc.doFilter(request, response);
             return;

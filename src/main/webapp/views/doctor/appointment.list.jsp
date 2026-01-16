@@ -107,6 +107,7 @@
                                             LEFT JOIN TIMESLOT T ON A.TIMESLOTID = T.TIMESLOTID
                                             LEFT JOIN DOCTORSCHEDULE D ON T.SCHEDULEID = D.SCHEDULEID 
                                             WHERE A.DOCTORID = ? 
+                                            AND A.STATUS != 'CANCELLED'
                                             AND CURRENT_TIMESTAMP < D.SCHEDULEDATE
                                             ORDER BY D.SCHEDULEDATE ASC, T.STARTTIME ASC
                                             <sql:param value="${accountID}" />

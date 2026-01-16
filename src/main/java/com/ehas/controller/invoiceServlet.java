@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.annotation.WebServlet;
 
-@WebServlet(name = "invoiceListServlet", urlPatterns = {"/invoice"})
+@WebServlet("/invoice")
 public class invoiceServlet extends HttpServlet {
 
     private AppointmentDAO appointmentDAO;

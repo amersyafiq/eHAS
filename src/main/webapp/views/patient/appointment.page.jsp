@@ -24,7 +24,7 @@
         <sql:query var="appointment" dataSource="${myDatasource}">
             SELECT 
                 A.APPOINTMENTID, A.STATUS, A.CONCERN, A.PATIENTID, A.DOCTORID, A.TIMESLOTID, A.DIAGNOSIS, A.TREATMENT, A.NOTES, A.CONSULTATIONFEE, A.TREATMENTFEE, A.TOTALAMOUNT, A.CREATEDAT,
-                P.MEDICALRECORDNO, P.BLOODGROUP, P.ALLERGY,
+                P.MEDICALRECORDNO, P.BLOODGROUP, P.ALLERGY, A.FOLLOWUPAPPOINTMENTID,
                 PA.FULLNAME AS PATIENT_NAME, PA.EMAIL AS PATIENT_EMAIL, PA.PHONENO AS PATIENT_PHONE, PA.GENDER AS PATIENT_GENDER, PA.DATEOFBIRTH AS PATIENT_DOB, PA.PICTUREPATH AS PATIENT_PICTURE,
                 DA.FULLNAME AS DOCTOR_NAME, DA.PICTUREPATH AS DOCTOR_PICTURE,
                 D.LICENSENO, S.SPECIALITYNAME,
@@ -42,7 +42,7 @@
         </sql:query>
         
         <c:if test="${appointment.rowCount == 0}">
-            <c:redirect url="${pageContext.request.contextPath}/appointment">
+            <c:redirect url="/appointment">
                 <c:param name="error" value="Appointment not found" />
             </c:redirect>
         </c:if>
@@ -53,7 +53,7 @@
         <c:set var="loggedUser" value="${sessionScope.loggedUser}" />
         <c:if test="${loggedUser == null || loggedUser.accountID != appt.patientid}">
             <c:redirect url="/appointment">
-                <c:param name="error" value="Unauthorized access to medical report" />
+                <c:param name="error" value="Unauthorized access to appointment page" />
             </c:redirect>
         </c:if>
         
@@ -169,49 +169,55 @@
                                     <div class="card mb-3">
                                         <div class="card-body">
                                             <div class="row mb-3">
-                                                <h5 class="col-md-6 card-title" style="font-size: 1.1rem;">Appointment Information</h5>
-                                                    <div class="col-md-6 d-flex justify-content-end gap-4 align-items-center">
+                                                <h5 class="col-md-5 card-title" style="font-size: 1.1rem;">Appointment Information</h5>
+                                                <div class="col-md-7 d-flex justify-content-end gap-2 align-items-center">
                                                     <c:if test="${appt.status == 'PENDING' || appt.status == 'CONFIRMED'}">
-                                                        <fmt:formatDate value="${appt.SCHEDULEDATE}" pattern="yyyyMMdd" var="datePart"/>
-                                                        <fmt:formatDate value="${appt.STARTTIME}" pattern="HHmmss" var="startTimePart"/>
-                                                        <fmt:formatDate value="${appt.ENDTIME}" pattern="HHmmss" var="endTimePart"/>
-                                                        <c:set var="startFormatted" value="${datePart}T${startTimePart}"/>
-                                                        <c:set var="endFormatted" value="${datePart}T${endTimePart}"/>
-                                                        <c:set var="icsPeriod" value="${startFormatted}/${endFormatted}" />
-                                                        <c:set var="encodedIcsPeriod" value="${startFormatted}%2F${endFormatted}" />
-                                                        <a 
-                                                            href="https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${encodedIcsPeriod}&text=Appointment%20with%20${appt.DOCTOR_NAME}&details=Concern:%20${appt.CONCERN}"
-                                                            target="_blank" class="d-flex align-items-center gap-2"
-                                                        >
-                                                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <g clip-path="url(#clip0_333_687)">
-                                                                    <path d="M6.49989 1.44446C3.71552 1.44446 1.44434 3.85524 1.44434 6.80955C1.44434 8.40529 2.10774 9.84154 3.15594 10.8259L2.44421 11.5971C2.29988 11.7535 2.22002 11.9644 2.22218 12.1833C2.22433 12.4022 2.30834 12.6112 2.45571 12.7643C2.60309 12.9175 2.80176 13.0023 3.00803 13C3.21429 12.9977 3.41125 12.9085 3.55558 12.7521L4.49609 11.7329C5.11113 12.0165 5.78855 12.1746 6.49989 12.1746C7.21123 12.1746 7.88866 12.0165 8.50369 11.7329L9.44421 12.7521C9.58853 12.9085 9.78549 12.9977 9.99175 13C10.198 13.0023 10.3967 12.9175 10.5441 12.7643C10.6914 12.6112 10.7754 12.4022 10.7776 12.1833C10.7798 11.9644 10.6999 11.7535 10.5556 11.5971L9.84384 10.8259C10.892 9.84154 11.5554 8.40529 11.5554 6.80955C11.5554 3.85524 9.28426 1.44446 6.49989 1.44446ZM6.49989 2.87472C8.55494 2.87472 10.2069 4.62767 10.2069 6.80955C10.2069 8.99143 8.55494 10.7444 6.49989 10.7444C4.44484 10.7444 2.79288 8.99143 2.79288 6.80955C2.79288 4.62767 4.44484 2.87472 6.49989 2.87472Z" fill="#3A57E8"/>
-                                                                    <path d="M6.49957 5.77777C6.10754 5.77777 5.77734 6.10796 5.77734 6.49999C5.77734 6.89202 6.10754 7.22222 6.49957 7.22222C6.89159 7.22222 7.22179 6.89202 7.22179 6.49999C7.22179 6.10796 6.89159 5.77777 6.49957 5.77777Z" fill="#3A57E8"/>
-                                                                    <path d="M2.34761 2.25373e-05C2.2759 -0.000645155 2.20478 0.0135291 2.13829 0.041736C1.23431 0.425395 0.494357 1.14267 0.0578051 2.05844C0.0256948 2.12579 0.00652791 2.19913 0.00139871 2.27426C-0.0037305 2.34939 0.00527847 2.42485 0.0279112 2.49633C0.050544 2.56781 0.0863573 2.6339 0.133306 2.69084C0.180256 2.74778 0.237421 2.79444 0.301539 2.82817C0.365659 2.8619 0.435475 2.88204 0.507002 2.88742C0.578529 2.89281 0.650365 2.88334 0.718409 2.85956C0.786453 2.83578 0.849372 2.79816 0.903573 2.74884C0.957775 2.69952 1.0022 2.63946 1.0343 2.57211C1.3519 1.90587 1.88974 1.38457 2.5474 1.10545C2.61389 1.07723 2.67443 1.03553 2.72558 0.982728C2.77673 0.929929 2.81747 0.867064 2.84549 0.797723C2.8735 0.728382 2.88825 0.653923 2.88887 0.578598C2.88949 0.503272 2.87598 0.428556 2.84912 0.358714C2.80866 0.253532 2.73942 0.163314 2.65015 0.0994681C2.56088 0.035622 2.4556 0.00101485 2.34761 2.25373e-05Z" fill="#3A57E8"/>
-                                                                    <path d="M10.6524 2.25373e-05C10.7241 -0.000645155 10.7952 0.0135291 10.8617 0.041736C11.7657 0.425395 12.5056 1.14267 12.9422 2.05844C12.9743 2.12579 12.9935 2.19913 12.9986 2.27426C13.0037 2.34939 12.9947 2.42485 12.9721 2.49633C12.9495 2.56781 12.9136 2.6339 12.8667 2.69084C12.8197 2.74778 12.7626 2.79444 12.6985 2.82817C12.6343 2.8619 12.5645 2.88204 12.493 2.88742C12.4215 2.89281 12.3496 2.88334 12.2816 2.85956C12.2135 2.83578 12.1506 2.79816 12.0964 2.74884C12.0422 2.69952 11.9978 2.63946 11.9657 2.57211C11.6481 1.90587 11.1103 1.38457 10.4526 1.10545C10.3861 1.07723 10.3256 1.03553 10.2744 0.982728C10.2233 0.929929 10.1825 0.867064 10.1545 0.797723C10.1265 0.728382 10.1118 0.653923 10.1111 0.578597C10.1105 0.503272 10.124 0.428556 10.1509 0.358714C10.1913 0.253532 10.2606 0.163314 10.3498 0.0994681C10.4391 0.035622 10.5444 0.00101485 10.6524 2.25373e-05Z" fill="#3A57E8"/>
-                                                                    <path d="M6.49957 2.88892C6.30802 2.88892 6.12432 2.96586 5.98888 3.10282C5.85343 3.23979 5.77734 3.42555 5.77734 3.61924V5.04748C5.77734 5.24117 5.85343 5.42693 5.98888 5.5639C6.12432 5.70086 6.30802 5.7778 6.49957 5.7778C6.69111 5.7778 6.87481 5.70086 7.01025 5.5639C7.1457 5.42693 7.22179 5.24117 7.22179 5.04748V3.61924C7.22179 3.42555 7.1457 3.23979 7.01025 3.10282C6.87481 2.96586 6.69111 2.88892 6.49957 2.88892Z" fill="#3A57E8"/>
-                                                                    <path d="M7.74176 7.22709C7.61795 7.20278 7.49398 7.27027 7.39713 7.4147C7.30027 7.55913 7.23846 7.76867 7.22529 7.99722C7.21212 8.22578 7.24867 8.45464 7.3269 8.63346L7.83247 9.78901C7.9107 9.96782 8.0242 10.0819 8.148 10.1063C8.27181 10.1306 8.39577 10.0631 8.49263 9.91868C8.58948 9.77425 8.65129 9.56471 8.66446 9.33615C8.67764 9.10759 8.64109 8.87874 8.56286 8.69992L8.05729 7.54436C7.97906 7.36554 7.86556 7.25142 7.74176 7.22709Z" fill="#3A57E8"/>
-                                                                </g>
-                                                                <defs>
-                                                                    <clipPath id="clip0_333_687">
-                                                                    <rect width="13" height="13" fill="white"/>
-                                                                    </clipPath>
-                                                                </defs>
-                                                            </svg>
-                                                            <small>Add to Google Calendar</small>
-                                                        </a>
+                                                    <fmt:formatDate value="${appt.SCHEDULEDATE}" pattern="yyyyMMdd" var="datePart"/>
+                                                    <fmt:formatDate value="${appt.STARTTIME}" pattern="HHmmss" var="startTimePart"/>
+                                                    <fmt:formatDate value="${appt.ENDTIME}" pattern="HHmmss" var="endTimePart"/>
+                                                    <c:set var="startFormatted" value="${datePart}T${startTimePart}"/>
+                                                    <c:set var="endFormatted" value="${datePart}T${endTimePart}"/>
+                                                    <c:set var="icsPeriod" value="${startFormatted}/${endFormatted}" />
+                                                    <c:set var="encodedIcsPeriod" value="${startFormatted}%2F${endFormatted}" />
+                                                    <a 
+                                                        href="https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${encodedIcsPeriod}&text=Appointment%20with%20${appt.DOCTOR_NAME}&details=Concern:%20${appt.CONCERN}"
+                                                        target="_blank" class="d-flex align-items-center gap-2"
+                                                    >
+                                                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <g clip-path="url(#clip0_333_687)">
+                                                                <path d="M6.49989 1.44446C3.71552 1.44446 1.44434 3.85524 1.44434 6.80955C1.44434 8.40529 2.10774 9.84154 3.15594 10.8259L2.44421 11.5971C2.29988 11.7535 2.22002 11.9644 2.22218 12.1833C2.22433 12.4022 2.30834 12.6112 2.45571 12.7643C2.60309 12.9175 2.80176 13.0023 3.00803 13C3.21429 12.9977 3.41125 12.9085 3.55558 12.7521L4.49609 11.7329C5.11113 12.0165 5.78855 12.1746 6.49989 12.1746C7.21123 12.1746 7.88866 12.0165 8.50369 11.7329L9.44421 12.7521C9.58853 12.9085 9.78549 12.9977 9.99175 13C10.198 13.0023 10.3967 12.9175 10.5441 12.7643C10.6914 12.6112 10.7754 12.4022 10.7776 12.1833C10.7798 11.9644 10.6999 11.7535 10.5556 11.5971L9.84384 10.8259C10.892 9.84154 11.5554 8.40529 11.5554 6.80955C11.5554 3.85524 9.28426 1.44446 6.49989 1.44446ZM6.49989 2.87472C8.55494 2.87472 10.2069 4.62767 10.2069 6.80955C10.2069 8.99143 8.55494 10.7444 6.49989 10.7444C4.44484 10.7444 2.79288 8.99143 2.79288 6.80955C2.79288 4.62767 4.44484 2.87472 6.49989 2.87472Z" fill="#3A57E8"/>
+                                                                <path d="M6.49957 5.77777C6.10754 5.77777 5.77734 6.10796 5.77734 6.49999C5.77734 6.89202 6.10754 7.22222 6.49957 7.22222C6.89159 7.22222 7.22179 6.89202 7.22179 6.49999C7.22179 6.10796 6.89159 5.77777 6.49957 5.77777Z" fill="#3A57E8"/>
+                                                                <path d="M2.34761 2.25373e-05C2.2759 -0.000645155 2.20478 0.0135291 2.13829 0.041736C1.23431 0.425395 0.494357 1.14267 0.0578051 2.05844C0.0256948 2.12579 0.00652791 2.19913 0.00139871 2.27426C-0.0037305 2.34939 0.00527847 2.42485 0.0279112 2.49633C0.050544 2.56781 0.0863573 2.6339 0.133306 2.69084C0.180256 2.74778 0.237421 2.79444 0.301539 2.82817C0.365659 2.8619 0.435475 2.88204 0.507002 2.88742C0.578529 2.89281 0.650365 2.88334 0.718409 2.85956C0.786453 2.83578 0.849372 2.79816 0.903573 2.74884C0.957775 2.69952 1.0022 2.63946 1.0343 2.57211C1.3519 1.90587 1.88974 1.38457 2.5474 1.10545C2.61389 1.07723 2.67443 1.03553 2.72558 0.982728C2.77673 0.929929 2.81747 0.867064 2.84549 0.797723C2.8735 0.728382 2.88825 0.653923 2.88887 0.578598C2.88949 0.503272 2.87598 0.428556 2.84912 0.358714C2.80866 0.253532 2.73942 0.163314 2.65015 0.0994681C2.56088 0.035622 2.4556 0.00101485 2.34761 2.25373e-05Z" fill="#3A57E8"/>
+                                                                <path d="M10.6524 2.25373e-05C10.7241 -0.000645155 10.7952 0.0135291 10.8617 0.041736C11.7657 0.425395 12.5056 1.14267 12.9422 2.05844C12.9743 2.12579 12.9935 2.19913 12.9986 2.27426C13.0037 2.34939 12.9947 2.42485 12.9721 2.49633C12.9495 2.56781 12.9136 2.6339 12.8667 2.69084C12.8197 2.74778 12.7626 2.79444 12.6985 2.82817C12.6343 2.8619 12.5645 2.88204 12.493 2.88742C12.4215 2.89281 12.3496 2.88334 12.2816 2.85956C12.2135 2.83578 12.1506 2.79816 12.0964 2.74884C12.0422 2.69952 11.9978 2.63946 11.9657 2.57211C11.6481 1.90587 11.1103 1.38457 10.4526 1.10545C10.3861 1.07723 10.3256 1.03553 10.2744 0.982728C10.2233 0.929929 10.1825 0.867064 10.1545 0.797723C10.1265 0.728382 10.1118 0.653923 10.1111 0.578597C10.1105 0.503272 10.124 0.428556 10.1509 0.358714C10.1913 0.253532 10.2606 0.163314 10.3498 0.0994681C10.4391 0.035622 10.5444 0.00101485 10.6524 2.25373e-05Z" fill="#3A57E8"/>
+                                                                <path d="M6.49957 2.88892C6.30802 2.88892 6.12432 2.96586 5.98888 3.10282C5.85343 3.23979 5.77734 3.42555 5.77734 3.61924V5.04748C5.77734 5.24117 5.85343 5.42693 5.98888 5.5639C6.12432 5.70086 6.30802 5.7778 6.49957 5.7778C6.69111 5.7778 6.87481 5.70086 7.01025 5.5639C7.1457 5.42693 7.22179 5.24117 7.22179 5.04748V3.61924C7.22179 3.42555 7.1457 3.23979 7.01025 3.10282C6.87481 2.96586 6.69111 2.88892 6.49957 2.88892Z" fill="#3A57E8"/>
+                                                                <path d="M7.74176 7.22709C7.61795 7.20278 7.49398 7.27027 7.39713 7.4147C7.30027 7.55913 7.23846 7.76867 7.22529 7.99722C7.21212 8.22578 7.24867 8.45464 7.3269 8.63346L7.83247 9.78901C7.9107 9.96782 8.0242 10.0819 8.148 10.1063C8.27181 10.1306 8.39577 10.0631 8.49263 9.91868C8.58948 9.77425 8.65129 9.56471 8.66446 9.33615C8.67764 9.10759 8.64109 8.87874 8.56286 8.69992L8.05729 7.54436C7.97906 7.36554 7.86556 7.25142 7.74176 7.22709Z" fill="#3A57E8"/>
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_333_687">
+                                                                <rect width="13" height="13" fill="white"/>
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                        <small>Add to Google Calendar</small>
+                                                    </a>
                                                     </c:if>
-                                                        <span class="badge px-3 py-2 fw-normal
-                                                            <c:choose>
-                                                                <c:when test="${appt.status == 'PENDING'}">bg-primary bg-opacity-25 text-primary</c:when>
-                                                                <c:when test="${appt.status == 'CONFIRMED'}">bg-primary text-white</c:when>
-                                                                <c:when test="${appt.status == 'COMPLETED'}">bg-secondary text-white</c:when>
-                                                                <c:when test="${appt.status == 'CANCELLED'}">bg-danger text-white</c:when>
-                                                                <c:otherwise>bg-dark text-white</c:otherwise>
-                                                            </c:choose>">
-                                                            ${appt.status}
-                                                        </span>
-                                                    </div>
+                                                    <span class="ms-2 badge px-3 py-2 fw-normal
+                                                        <c:choose>
+                                                            <c:when test="${appt.status == 'PENDING'}">bg-primary bg-opacity-25 text-primary</c:when>
+                                                            <c:when test="${appt.status == 'CONFIRMED'}">bg-primary text-white</c:when>
+                                                            <c:when test="${appt.status == 'COMPLETED'}">bg-secondary text-white</c:when>
+                                                            <c:when test="${appt.status == 'CANCELLED'}">bg-danger text-white</c:when>
+                                                            <c:otherwise>bg-dark text-white</c:otherwise>
+                                                        </c:choose>">
+                                                        ${appt.status}
+                                                    </span>
+
+                                                    <c:if test="${appt.followupappointmentid != null && appt.followupappointmentid > 0}">
+                                                    <span role="button" onclick="location.href='${pageContext.request.contextPath}/appointment/page?id=${appt.followupappointmentid}'" class="badge bg-primary px-3 py-2 fw-normal">
+                                                        FOLLOW UP
+                                                    </span>
+                                                    </c:if>
+                                                </div>
                                             </div>
                                             <div class="row px-4 g-2 mb-2">
                                                 <div class="col-md-6 d-flex gap-3">
@@ -265,8 +271,9 @@
                                                 </div>
                                                 <div class="col-md-12 d-flex gap-3">
                                                     <div style="background-color: #f3f3f3; height: fit-content;" class="rounded-2 p-3 d-flex justify-content-center align-items-center">
-                                                        <svg width="25" height="25" viewBox="0 0 132 174" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M4.40892 174C2.01833 174 0 172.016 0 169.673V4.3964C0 1.972 1.9718 0 4.40892 0H89.9466C91.0983 0 92.2383 0.4872 93.1224 1.3688L130.633 38.8426C131.506 39.5966 132 40.7218 132 41.9456V169.667C132 172.016 129.982 174 127.591 174H4.40892ZM8.82366 165.277H123.246V46.3362H89.9408C87.5037 46.3362 85.526 44.3642 85.526 41.9456V8.7232H8.82366V165.277ZM94.3555 37.613H117.04L94.3555 14.9118V37.613Z" fill="#3A57E8"/>
+                                                        <svg width="25" height="25" viewBox="0 0 800 756" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M44.4446 88.8888H133.333V177.778H488.888V88.8888H577.779V155.555H622.221V44.4442H485.096C475.942 18.5512 451.25 0 422.221 0H200C170.973 0 146.279 18.5512 137.127 44.4442H0V755.555H622.221V622.222H577.779V711.11H44.4446V88.8888ZM177.778 133.333V66.6667C177.778 54.3933 187.727 44.4442 200 44.4442H422.221C434.496 44.4442 444.446 54.3933 444.446 66.6667V133.333H177.778Z" fill="#3A57E8"/>
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M698.988 197.767L793.105 291.885C802.28 301.061 802.28 315.932 793.105 325.155L510.751 607.509C506.326 611.884 500.351 614.38 494.092 614.38H399.974C386.987 614.38 376.445 603.838 376.445 590.851V496.73C376.445 490.472 378.939 484.497 383.316 480.122L665.667 197.767C674.892 188.544 689.763 188.544 698.988 197.767ZM634.234 295.744L695.08 356.591L743.176 308.497L682.326 247.65L634.234 295.744ZM423.505 567.322H484.351L661.809 389.863L600.963 329.014L423.505 506.472V567.322Z" fill="#3A57E8"/>
                                                         </svg>
                                                     </div>
                                                     <div class="flex-grow-1 d-flex flex-column justify-content-start align-items-start">
@@ -316,13 +323,15 @@
                                     </c:if>
                                     
                                     <button 
-                                        onclick="location.href='${pageContext.request.contextPath}/appointment/report?id=${appt.appointmentID}'""
+                                        onclick="location.href='${pageContext.request.contextPath}/appointment/report?id=${appt.appointmentID}'"
                                         class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
                                             ${appt.status != 'COMPLETED' ? 'disabled' : ''}>    
                                         View Medical Report
                                     </button>
 
-                                    <button class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
+                                    <button 
+                                        onclick="location.href='${pageContext.request.contextPath}/appointment/invoice?id=${appt.appointmentID}'"
+                                        class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
                                             ${appt.status != 'COMPLETED' ? 'disabled' : ''}>    
                                         View Invoice
                                     </button>

@@ -42,7 +42,7 @@
         </sql:query>
         
         <c:if test="${appointment.rowCount == 0}">
-            <c:redirect url="${pageContext.request.contextPath}/appointment">
+            <c:redirect url="/appointment">
                 <c:param name="error" value="Appointment not found" />
             </c:redirect>
         </c:if>
@@ -158,8 +158,8 @@
                                     <div class="card mb-3">
                                         <div class="card-body">
                                             <div class="row mb-3">
-                                                <h5 class="col-md-6 card-title" style="font-size: 1.1rem;">Appointment Information</h5>
-                                                <div class="col-md-6 d-flex justify-content-end gap-4 align-items-center">
+                                                <h5 class="col-md-5 card-title" style="font-size: 1.1rem;">Appointment Information</h5>
+                                                <div class="col-md-7 d-flex justify-content-end gap-2 align-items-center">
                                                     <fmt:formatDate value="${appt.SCHEDULEDATE}" pattern="yyyyMMdd" var="datePart"/>
                                                     <fmt:formatDate value="${appt.STARTTIME}" pattern="HHmmss" var="startTimePart"/>
                                                     <fmt:formatDate value="${appt.ENDTIME}" pattern="HHmmss" var="endTimePart"/>
@@ -188,7 +188,7 @@
                                                         </svg>
                                                         <small>Add to Google Calendar</small>
                                                     </a>
-                                                    <span class="badge px-3 py-2 fw-normal
+                                                    <span class="badge ms-2 px-3 py-2 fw-normal
                                                         <c:choose>
                                                             <c:when test="${appt.status == 'PENDING'}">bg-primary bg-opacity-25 text-primary</c:when>
                                                             <c:when test="${appt.status == 'CONFIRMED'}">bg-primary text-white</c:when>
@@ -198,6 +198,11 @@
                                                         </c:choose>">
                                                         ${appt.status}
                                                     </span>
+                                                    <c:if test="${appt.followupappointmentid != null && appt.followupappointmentid > 0}">
+                                                    <span role="button" onclick="location.href='${pageContext.request.contextPath}/appointment/page?id=${appt.followupappointmentid}'" class="badge bg-primary px-3 py-2 fw-normal">
+                                                        FOLLOW UP
+                                                    </span>
+                                                    </c:if>
                                                 </div>
                                             </div>
                                             <div class="row px-4 g-2 mb-2">
@@ -252,8 +257,9 @@
                                                 </div>
                                                 <div class="col-md-12 d-flex gap-3">
                                                     <div style="background-color: #f3f3f3; height: fit-content;" class="rounded-2 p-3 d-flex justify-content-center align-items-center">
-                                                        <svg width="25" height="25" viewBox="0 0 132 174" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M4.40892 174C2.01833 174 0 172.016 0 169.673V4.3964C0 1.972 1.9718 0 4.40892 0H89.9466C91.0983 0 92.2383 0.4872 93.1224 1.3688L130.633 38.8426C131.506 39.5966 132 40.7218 132 41.9456V169.667C132 172.016 129.982 174 127.591 174H4.40892ZM8.82366 165.277H123.246V46.3362H89.9408C87.5037 46.3362 85.526 44.3642 85.526 41.9456V8.7232H8.82366V165.277ZM94.3555 37.613H117.04L94.3555 14.9118V37.613Z" fill="#3A57E8"/>
+                                                        <svg width="25" height="25" viewBox="0 0 800 756" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M44.4446 88.8888H133.333V177.778H488.888V88.8888H577.779V155.555H622.221V44.4442H485.096C475.942 18.5512 451.25 0 422.221 0H200C170.973 0 146.279 18.5512 137.127 44.4442H0V755.555H622.221V622.222H577.779V711.11H44.4446V88.8888ZM177.778 133.333V66.6667C177.778 54.3933 187.727 44.4442 200 44.4442H422.221C434.496 44.4442 444.446 54.3933 444.446 66.6667V133.333H177.778Z" fill="#3A57E8"/>
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M698.988 197.767L793.105 291.885C802.28 301.061 802.28 315.932 793.105 325.155L510.751 607.509C506.326 611.884 500.351 614.38 494.092 614.38H399.974C386.987 614.38 376.445 603.838 376.445 590.851V496.73C376.445 490.472 378.939 484.497 383.316 480.122L665.667 197.767C674.892 188.544 689.763 188.544 698.988 197.767ZM634.234 295.744L695.08 356.591L743.176 308.497L682.326 247.65L634.234 295.744ZM423.505 567.322H484.351L661.809 389.863L600.963 329.014L423.505 506.472V567.322Z" fill="#3A57E8"/>
                                                         </svg>
                                                     </div>
                                                     <div class="flex-grow-1 d-flex flex-column justify-content-start align-items-start">
@@ -316,19 +322,12 @@
                                         </c:if>
                                     </div>
 
-                                    <c:if test="${appt.status == 'PENDING' || appt.status == 'CONFIRMED'}">
-                                    <div class="w-100"><hr class="border border-1 border-light"></div>
+                                    <c:if test="${appt.status == 'COMPLETED'}">
+                                        <button onclick="location.href='${pageContext.request.contextPath}/appointment'" class="btn col-12 rounded-3 btn-primary">  
+                                            Return to Appointments
+                                        </button>
                                     </c:if>
 
-                                    <button class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
-                                            ${appt.status != 'COMPLETED' ? 'disabled' : ''}>    
-                                        View Medical Report
-                                    </button>
-
-                                    <button class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
-                                            ${appt.status != 'COMPLETED' ? 'disabled' : ''}>    
-                                        View Invoice
-                                    </button>
                                 </div>
                             </div>
                         </div>
