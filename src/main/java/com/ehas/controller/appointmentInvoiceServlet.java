@@ -2,6 +2,7 @@ package com.ehas.controller;
 
 import java.io.IOException;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import com.ehas.dao.AppointmentDAO;
 import com.stripe.Stripe;
 import com.stripe.model.PaymentIntent;
@@ -19,12 +20,14 @@ import jakarta.servlet.annotation.WebServlet;
 })
 public class appointmentInvoiceServlet extends HttpServlet {
 
+    private Dotenv dotenv;
     private AppointmentDAO appointmentDAO;
 
     @Override
     public void init() throws ServletException {
        
     	// Initialize DAO object. Called once when servlet loads. 
+        dotenv = Dotenv.configure().ignoreIfMissing().load();
         appointmentDAO = new AppointmentDAO();
     }
 
@@ -39,16 +42,13 @@ public class appointmentInvoiceServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
         int appointmentID = Integer.parseInt(request.getParameter("appointmentID"));
         String paymentMethodID = request.getParameter("paymentMethodID");
         long amount = Long.parseLong(request.getParameter("amount")); // in cents
         
         // Use your SECRET KEY for server-side calls
-        String secretKey = "sk_test_51Spq9kRVXUoMhoEvE1AglucWN6Sx0v0GAVhlBllZcIOf9Rtl6OzGhWt9efISOhQDctPuTotqigYrh0eicxUQNLso00zHWKYSb0";
-        
+        String secretKey = dotenv.get("STRIPE_SECRET_KEY");       
+         
         try {
             // Create payment intent
             Stripe.apiKey = secretKey;
