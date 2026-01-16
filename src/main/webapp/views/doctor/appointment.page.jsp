@@ -160,6 +160,7 @@
                                             <div class="row mb-3">
                                                 <h5 class="col-md-5 card-title" style="font-size: 1.1rem;">Appointment Information</h5>
                                                 <div class="col-md-7 d-flex justify-content-end gap-2 align-items-center">
+                                                    <c:if test="${appt.status == 'PENDING' || appt.status == 'CONFIRMED'}">
                                                     <fmt:formatDate value="${appt.SCHEDULEDATE}" pattern="yyyyMMdd" var="datePart"/>
                                                     <fmt:formatDate value="${appt.STARTTIME}" pattern="HHmmss" var="startTimePart"/>
                                                     <fmt:formatDate value="${appt.ENDTIME}" pattern="HHmmss" var="endTimePart"/>
@@ -188,6 +189,7 @@
                                                         </svg>
                                                         <small>Add to Google Calendar</small>
                                                     </a>
+                                                    </c:if>
                                                     <span class="badge ms-2 px-3 py-2 fw-normal
                                                         <c:choose>
                                                             <c:when test="${appt.status == 'PENDING'}">bg-primary bg-opacity-25 text-primary</c:when>

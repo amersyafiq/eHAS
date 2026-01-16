@@ -132,7 +132,7 @@
                         <sql:query var="results" dataSource="${myDatasource}"> 
                             SELECT A.APPOINTMENTID, A.STATUS, AC.FULLNAME,  TO_CHAR(T.STARTTIME, 'HH:MI AM') AS STARTTIME,
                                    TO_CHAR(T.ENDTIME, 'HH:MI AM') AS ENDTIME, TO_CHAR(D.SCHEDULEDATE, 'DD') AS DATE, 
-                                   UPPER(TO_CHAR(D.SCHEDULEDATE, 'Mon')) AS MONTH, D.SCHEDULEDATE
+                                   UPPER(TO_CHAR(D.SCHEDULEDATE, 'Mon')) AS MONTH, D.SCHEDULEDATE, A.BILLSTATUS
                             FROM APPOINTMENT A
                             LEFT JOIN TIMESLOT T ON A.TIMESLOTID = T.TIMESLOTID
                             LEFT JOIN DOCTORSCHEDULE D ON T.SCHEDULEID = D.SCHEDULEID 
@@ -193,6 +193,11 @@
                                                                 >
                                                                     ${result.STATUS}
                                                                 </span>
+                                                                <c:if test="${result.STATUS == 'COMPLETED'}">
+                                                                <span class="badge bg-primary px-3 py-2 fw-normal">
+                                                                    ${result.BILLSTATUS}
+                                                                </span>
+                                                                </c:if>
                                                             </div>
                                                             
                                                             <div class="d-flex flex-column">

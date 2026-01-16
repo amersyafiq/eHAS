@@ -175,7 +175,7 @@
                                             <c:choose>
                                                 <c:when test="${todaysAppointments.rowCount > 0}">
                                                     <c:forEach var="appt" items="${todaysAppointments.rows}">
-                                                        <div class="border rounded p-3 mb-3 border-1 border-primary" style="background-color: #f2f4fe;">
+                                                        <div role="button" onclick="location.href='${pageContext.request.contextPath}/appointment/page?id=${appt.appointmentid}'" class="border rounded p-3 mb-3 border-1 border-primary" style="background-color: #f2f4fe;">
                                                             <div class="d-flex justify-content-between align-items-start">
                                                                 <div class="d-flex gap-3">
                                                                     <div class="text-primary px-2">
@@ -223,7 +223,7 @@
                                             <c:choose>
                                                 <c:when test="${upcomingAppointments.rowCount > 0}">
                                                     <c:forEach var="appt" items="${upcomingAppointments.rows}">
-                                                        <div class="border rounded p-3 mb-3">
+                                                        <div role="button" onclick="location.href='${pageContext.request.contextPath}/appointment/page?id=${appt.appointmentid}'" class="border rounded p-3 mb-3">
                                                             <div>
                                                                 <h6 class="mb-1 fw-semibold text-truncate">${appt.patient_name}</h6>
                                                                 <p class="mb-0 text-primary small fw-medium">${appt.scheduledate}</p>

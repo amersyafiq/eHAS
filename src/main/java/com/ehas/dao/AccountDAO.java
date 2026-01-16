@@ -5,6 +5,7 @@
 package com.ehas.dao;
 
 import com.ehas.model.Account;
+import com.ehas.util.DBConnection;
 import com.ehas.util.passwordHash;
 
 import java.time.*;
@@ -20,6 +21,7 @@ import java.sql.Statement;
  * @author SYAFIQ
  */
 public class AccountDAO {
+    private Connection conn;
     private PreparedStatement pstmt;
     private ResultSet rs;
     
@@ -31,6 +33,9 @@ public class AccountDAO {
 
     private static final String SELECT_ACCOUNT_SQL =
         "SELECT * FROM ACCOUNT WHERE EMAIL = ? AND PASSWORD = ?";
+
+    private static final String UPDATE_ACCOUNT_TYPE =
+        "UPDATE ACCOUNT SET ACCOUNTTYPE = ? WHERE ACCOUNTID = ? ";
 
     // Used in 'registerServlet' for Account Registration
     // return last_inserted_id (for patient/doctor)
@@ -67,8 +72,6 @@ public class AccountDAO {
     // For account login
     public Account authenticateAccount(String email, String password, Connection conn) {
         String hashedPassword = passwordHash.doHashing(password);
-        System.out.println(email);
-        System.out.println(hashedPassword);
         try {
             pstmt = conn.prepareStatement(SELECT_ACCOUNT_SQL);
             pstmt.setString(1, email);
@@ -102,6 +105,27 @@ public class AccountDAO {
             return exists;
         } catch (SQLException e) {
             System.err.println("Error while validating email: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateAccountType(int accountID, String type) {
+        try {
+            conn = DBConnection.createConnection();
+            pstmt = conn.prepareStatement(UPDATE_ACCOUNT_TYPE);
+            
+            pstmt.setString(1, type);
+            pstmt.setInt(2, accountID);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            
+            pstmt.close();
+            conn.close();
+            
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;

@@ -103,7 +103,7 @@
                                             <c:choose>
                                                 <c:when test="${upcomingAppointments.rowCount > 0}">
                                                     <c:forEach var="appt" items="${upcomingAppointments.rows}">
-                                                        <div class="border rounded p-3 mb-3 border-1 border-primary" style="background-color: #f2f4fe;">
+                                                        <div role="button" onclick="location.href='${pageContext.request.contextPath}/appointment/page?id=${appt.appointmentid}'" class="border rounded p-3 mb-3 border-1 border-primary" style="background-color: #f2f4fe;">
                                                             <div class="d-flex justify-content-between align-items-start">
                                                                 <div class="d-flex gap-3">
                                                                     <div class="text-primary px-2">
@@ -148,7 +148,7 @@
                                             <c:choose>
                                                 <c:when test="${bills.rowCount > 0}">
                                                     <c:forEach var="bill" items="${bills.rows}">
-                                                        <div class="border rounded p-3 mb-3 d-flex justify-content-between align-items-center">
+                                                        <div role="button" onclick="location.href='${pageContext.request.contextPath}/appointment/invoice?id=${bill.appointmentid}'" class="border rounded p-3 mb-3 d-flex justify-content-between align-items-center">
                                                             <div>
                                                                 <h6 class="mb-1 fw-semibold">Appointment #${bill.appointmentid}</h6>
                                                                 <p class="mb-0 text-muted small">${bill.doctor_name}</p>
@@ -156,11 +156,11 @@
                                                             <div class="text-end">
                                                                 <c:choose>
                                                                     <c:when test="${bill.billstatus == 'PAID'}">
-                                                                        <p class="mb-0 fw-bold text-success">RM${bill.totalamount}</p>
+                                                                        <p class="mb-0 fw-bold text-success"><fmt:formatNumber value="${bill.totalamount}" type="currency" currencyCode="MYR"/></p>
                                                                         <span class="badge bg-success-subtle text-success small px-3 py-1">Paid</span>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <p class="mb-0 fw-bold text-danger">RM${bill.totalamount}</p>
+                                                                        <p class="mb-0 fw-bold text-danger"><fmt:formatNumber value="${bill.totalamount}" type="currency" currencyCode="MYR"/></p>
                                                                         <span class="badge bg-danger-subtle text-danger small px-3 py-1">Unpaid</span>
                                                                     </c:otherwise>
                                                                 </c:choose>

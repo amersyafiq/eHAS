@@ -145,7 +145,7 @@
                                                 <td class="py-2"><fmt:formatDate value="${appointment.SCHEDULEDATE}" pattern="MMMM d, yyyy"/></td>
                                                 <td class="py-2">${appointment.STARTTIME} - ${appointment.ENDTIME}</td>
                                                 <td class="py-2">
-                                                    <a href="${pageContext.request.contextPath}/appointment/page?id=${appointment.APPOINTMENTID}" class="action-link d-flex align-items-center gap-2">
+                                                    <a href="${pageContext.request.contextPath}/appointment/page?id=${appointment.APPOINTMENTID}" class="btn btn-sm btn-outline-primary rounded-pill">
                                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <circle cx="9.99992" cy="10.0002" r="1.66667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                                             <path d="M18.3334 9.99984C16.1109 13.889 13.3334 15.8332 10.0001 15.8332C6.66675 15.8332 3.88925 13.889 1.66675 9.99984C3.88925 6.11067 6.66675 4.1665 10.0001 4.1665C13.3334 4.1665 16.1109 6.11067 18.3334 9.99984" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

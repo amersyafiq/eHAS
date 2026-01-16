@@ -298,7 +298,7 @@
                                     html += `
                                         <div class="col">
                                             <div class="d-flex flex-row align-items-center gap-3 py-2">
-                                                <img src="\${picturePath}" alt="Patient Profile" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded border border-3 border-primary-subtle">
+                                                <img src="\${picturePath}" onerror="this.onerror=null; this.src='https://placehold.co/500x500?text=No+Image';" alt="Patient Profile" class="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded border border-3 border-primary-subtle">
                                                 <div class="w-100 d-flex flex-column justify-content-start align-items-start">
                                                     <p class="m-0 text-dark fw-normal lh-1 mb-1 text-truncate" style="max-width: 260px;">\${fullName}</p>
                                                     <p class="m-0 text-muted lh-1"><small>Patient</small></p>

@@ -24,7 +24,7 @@
         <sql:query var="appointment" dataSource="${myDatasource}">
             SELECT 
                 A.APPOINTMENTID, A.STATUS, A.CONCERN, A.PATIENTID, A.DOCTORID, A.TIMESLOTID, A.DIAGNOSIS, A.TREATMENT, A.NOTES, A.CONSULTATIONFEE, A.TREATMENTFEE, A.TOTALAMOUNT, A.CREATEDAT,
-                P.MEDICALRECORDNO, P.BLOODGROUP, P.ALLERGY, A.FOLLOWUPAPPOINTMENTID,
+                P.MEDICALRECORDNO, P.BLOODGROUP, P.ALLERGY, A.FOLLOWUPAPPOINTMENTID, A.TOTALAMOUNT,
                 PA.FULLNAME AS PATIENT_NAME, PA.EMAIL AS PATIENT_EMAIL, PA.PHONENO AS PATIENT_PHONE, PA.GENDER AS PATIENT_GENDER, PA.DATEOFBIRTH AS PATIENT_DOB, PA.PICTUREPATH AS PATIENT_PICTURE,
                 DA.FULLNAME AS DOCTOR_NAME, DA.PICTUREPATH AS DOCTOR_PICTURE,
                 D.LICENSENO, S.SPECIALITYNAME,
@@ -332,7 +332,7 @@
                                     <button 
                                         onclick="location.href='${pageContext.request.contextPath}/appointment/invoice?id=${appt.appointmentID}'"
                                         class="btn col-12 rounded-3 ${appt.status == 'COMPLETED' ? 'btn-primary' : 'btn-outline-light'}" 
-                                            ${appt.status != 'COMPLETED' ? 'disabled' : ''}>    
+                                            ${appt.status != 'COMPLETED' || empty appt.totalamount ? 'disabled' : ''}>    
                                         View Invoice
                                     </button>
                                 </div>
