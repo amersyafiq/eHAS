@@ -13,6 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AppointmentDAO {
     private Connection conn;
@@ -47,6 +51,74 @@ public class AppointmentDAO {
         "UPDATE APPOINTMENT SET BILLSTATUS = 'PAID' " +
         "WHERE APPOINTMENTID = ?";
     
+    private static final String GET_TOTAL_SUM = "SELECT SUM(%s) FROM appointment WHERE billstatus = 'PAID'";
+    private static final String COUNT_BY_STATUS = "SELECT COUNT(*) FROM appointment WHERE status = ?";
+    private static final String GET_TOTAL_COUNT = "SELECT COUNT(*) FROM appointment";
+    private static final String GET_SPECIALTY_STATS = 
+        "SELECT s.specialityname, s.department, COUNT(a.appointmentid) as app_count " +
+        "FROM appointment a " +
+        "JOIN doctor d ON a.doctorid = d.accountid " +
+        "JOIN speciality s ON d.specialityid = s.specialityid " +
+        "GROUP BY s.specialityname, s.department " +
+        "ORDER BY app_count DESC";
+    
+    // Count appointments by their status (e.g., 'Completed', 'Cancelled')
+    public int countByStatus(String status) {
+        int count = 0;
+        String query = "SELECT COUNT(*) FROM appointment WHERE status = ?";
+        try (Connection conn = DBConnection.createConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) count = rs.getInt(1);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return count;
+    }
+
+    public double getTotalSum(String columnName) {
+    double sum = 0;
+    // Use String.format to safely inject the column name into your constant
+    String query = String.format(GET_TOTAL_SUM, columnName); 
+    try (Connection conn = DBConnection.createConnection();
+         PreparedStatement ps = conn.prepareStatement(query);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) sum = rs.getDouble(1);
+    } catch (SQLException e) { e.printStackTrace(); }
+    return sum;
+}
+
+    // Get total count of all appointments
+    public int getTotalCount() {
+        int count = 0;
+        try (Connection conn = DBConnection.createConnection();
+             PreparedStatement pstmt = conn.prepareStatement(GET_TOTAL_COUNT);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) count = rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    // Get Specialty Performance Breakdown
+    public List<Map<String, Object>> getAppointmentsBySpecialty() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        try (Connection conn = DBConnection.createConnection();
+             PreparedStatement pstmt = conn.prepareStatement(GET_SPECIALTY_STATS);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("specialityname", rs.getString("specialityname"));
+                map.put("department", rs.getString("department"));
+                map.put("appointmentCount", rs.getInt("app_count"));
+                list.add(map);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
     
     // Create new appointment
     public boolean createAppointment(Appointment appointment) {

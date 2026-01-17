@@ -14,6 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -36,6 +38,12 @@ public class AccountDAO {
 
     private static final String UPDATE_ACCOUNT_TYPE =
         "UPDATE ACCOUNT SET ACCOUNTTYPE = ? WHERE ACCOUNTID = ? ";
+    
+    private static final String COUNT_BY_TYPE_SQL = 
+        "SELECT COUNT(*) FROM ACCOUNT WHERE ACCOUNTTYPE = ?";
+    
+    private static final String COUNT_RECENT_PATIENTS_SQL = 
+        "SELECT COUNT(*) FROM ACCOUNT WHERE ACCOUNTTYPE = 'patient' AND CREATEDAT >= (CURRENT_DATE - INTERVAL '30 days')";
 
     // Used in 'registerServlet' for Account Registration
     // return last_inserted_id (for patient/doctor)
@@ -148,4 +156,24 @@ public class AccountDAO {
 
         return new Account(accountID, fullName, password, ic_passport, email, phoneNo, gender, dateOfBirth, accountType, picturePath, createdAt, updatedAt);
     }
+    
+    /**
+     * Counts how many patients registered in the last X days for growth tracking
+     */
+    public int countRecentPatients(int days) {
+    int count = 0;
+    // Query counts accounts where accounttype is 'Patient' and createdat is recent
+    String query = "SELECT COUNT(*) FROM account WHERE accounttype = 'Patient' " +
+                   "AND createdat >= CURRENT_DATE - INTERVAL '" + days + " days'";
+    try (Connection conn = DBConnection.createConnection();
+         PreparedStatement ps = conn.prepareStatement(query);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+            count = rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return count;
+}
 }
