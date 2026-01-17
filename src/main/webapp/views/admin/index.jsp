@@ -1,5 +1,5 @@
 <%-- 
-    Document   : admin/index
+    Document   : index
     Created on : Jan 2026
     Author     : ASUS
 --%>
