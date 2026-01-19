@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.ehas.filter;
 
 import java.io.IOException;
@@ -18,17 +14,14 @@ import jakarta.servlet.ServletResponse;
 
 /**
  * Global authentication and request filtering filter.
- * 
- * This filter is applied to all URLs ("/*") in the application.
+ * * This filter is applied to all URLs ("/*") in the application.
  * It intercepts every incoming HTTP request to perform common tasks such as:
  * - Logging the requested path
  * - Checking user authentication/authorization
  * - Setting common response headers
  * - Blocking unauthorized access to protected resources
- * 
- * All requests pass through this filter before reaching servlets, JSPs, or static resources.
- * 
- * @author SYAFIQ
+ * * All requests pass through this filter before reaching servlets, JSPs, or static resources.
+ * * @author SYAFIQ
  */
 @WebFilter("/*")
 public class AuthFilter implements Filter {
@@ -44,15 +37,12 @@ public class AuthFilter implements Filter {
         String path = uri.substring(contextPath.length());
 
         HttpSession session = request.getSession(false);
+        Account account = (session == null) ? null : (Account) session.getAttribute("loggedUser");
         
         // Public Path (Static Resources, e.g.: CSS, JS, etc )
         if (
-                // Index
-                (
-                    session == null &&
-                    (path.equals("/") ||
-                    path.equals("/index"))
-                ) ||
+                path.equals("/") ||
+                path.equals("/index") ||
                 
                 // Login or Register
                 path.equals("/login") ||
@@ -67,15 +57,32 @@ public class AuthFilter implements Filter {
                 // Test S3
                 path.equals("/test-s3")
             ) {
+            
+            if (account != null && (path.equals("/") || path.equals("/index") || path.equals("/login"))) {
+                String type = account.getAccountType();
+                String dashboardPath = "";
+
+                if ("Patient".equalsIgnoreCase(type)) {
+                    dashboardPath = "/views/patient/index.jsp";
+                } else if ("Doctor".equalsIgnoreCase(type)) {
+                    dashboardPath = "/views/doctor/index.jsp";
+                } else if ("Admin".equalsIgnoreCase(type)) {
+                    dashboardPath = "/views/admin/index.jsp";
+                }
+
+                if (!dashboardPath.isEmpty()) {
+                    request.getRequestDispatcher(dashboardPath).forward(request, response);
+                    return;
+                }
+            }
+            
             fc.doFilter(request, response);
             return;
         }
 
-        Account account = (session == null) ? null : (Account) session.getAttribute("loggedUser");
-
         // If no user is logged in and trying to access a protected page
         if (account == null) {
-            response.sendRedirect(contextPath + "/login");
+            response.sendRedirect(contextPath + "/");
             return;
         }
 
@@ -111,8 +118,6 @@ public class AuthFilter implements Filter {
             }
         }
 
-
-        
         fc.doFilter(request, response);
     }
 

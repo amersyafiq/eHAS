@@ -16,7 +16,7 @@
         SELECT
             (SELECT COUNT(*) FROM appointment) AS total_appointments,
             (SELECT COUNT(*) FROM appointment WHERE status = 'PENDING') AS pending_appointments,
-            (SELECT COUNT(*) FROM appointment WHERE billstatus = 'UNPAID') AS unpaid_bills,
+            (SELECT COUNT(*) FROM appointment WHERE status = 'COMPLETED' AND billstatus = 'UNPAID') AS unpaid_bills,
             (SELECT COALESCE(SUM(totalamount), 0) 
             FROM appointment WHERE billstatus = 'PAID') AS total_revenue
     </sql:query>

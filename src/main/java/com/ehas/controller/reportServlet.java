@@ -2,7 +2,6 @@ package com.ehas.controller;
 
 import com.ehas.dao.AppointmentDAO;
 import com.ehas.dao.AccountDAO;
-import com.ehas.dao.DoctorDAO;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -13,32 +12,39 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.annotation.WebServlet;
 
-@WebServlet("/Admin/report") // Updated URL mapping for admin context
+@WebServlet("/report")
 public class reportServlet extends HttpServlet {
+
+    private AccountDAO accountDAO;
+    private AppointmentDAO appointmentDAO; 
+    
+    @Override
+    public void init() throws ServletException {
+       
+    	// Initialize DAO object. Called once when servlet loads. 
+    	accountDAO = new AccountDAO();
+    	appointmentDAO = new AppointmentDAO();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Initialize DAOs
-        AppointmentDAO appDAO = new AppointmentDAO();
-        AccountDAO accountDAO = new AccountDAO();
-        
         try {
             // 1. Financial Metrics (using float8 fields from appointment table)
-            double totalConsultFees = appDAO.getTotalSum("consultationfee");
-            double totalTreatmentFees = appDAO.getTotalSum("treatmentfee");
-            double totalRevenue = appDAO.getTotalSum("totalamount");
+            double totalConsultFees = appointmentDAO.getTotalSum("consultationfee");
+            double totalTreatmentFees = appointmentDAO.getTotalSum("treatmentfee");
+            double totalRevenue = appointmentDAO.getTotalSum("totalamount");
             
             // 2. Specialty Performance (Join doctor + speciality tables)
             // You should create a method in AppointmentDAO or DoctorDAO for this
-            List<Map<String, Object>> specialtyStats = appDAO.getAppointmentsBySpecialty();
+            List<Map<String, Object>> specialtyStats = appointmentDAO.getAppointmentsBySpecialty();
             
             // 3. Efficiency Metrics
-            int completedCount = appDAO.countByStatus("Completed");
-            int totalAppts = appDAO.getTotalCount();
+            int completedCount = appointmentDAO.countByStatus("Completed");
+            int totalAppts = appointmentDAO.getTotalCount();
             double cancellationRate = (totalAppts > 0) ? 
-                (appDAO.countByStatus("Cancelled") * 100.0 / totalAppts) : 0;
+                (appointmentDAO.countByStatus("Cancelled") * 100.0 / totalAppts) : 0;
             
             // 4. Growth Metrics
             int newPatients = accountDAO.countRecentPatients(30); // Last 30 days
