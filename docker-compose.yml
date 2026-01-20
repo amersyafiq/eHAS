@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  app:
+    # image: ghcr.io/amersyafiq/ehas:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ehas_app
+    ports:
+      - "80:8080"           # Maps host port 8080 to container
