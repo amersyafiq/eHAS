@@ -16,7 +16,7 @@ RUN mvn clean package -DskipTests -B
 
 # ========= STAGE 2: Runtime with Payara Server =========
 # Latest Payara 7 Community (Jakarta EE 11 certified, Dec 2025)
-FROM payara/server-full:latest
+FROM payara/server-full:7.2025.2
 
 # Copy the built WAR to Payara's autodeploy directory
 COPY --from=builder /app/target/*.war $DEPLOY_DIR/
